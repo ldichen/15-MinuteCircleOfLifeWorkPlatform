@@ -46,8 +46,7 @@
 
 <script setup>
 import { reactive, toRefs, onMounted } from 'vue'
-import Map from 'ol/Map'
-import View from 'ol/View'
+import mapboxgl from 'mapbox-gl'
 import Header from '@/components/header.vue'
 import tiandilayers from '@/layers/layers'
 import { fromLonLat } from 'ol/proj'
@@ -73,14 +72,66 @@ onMounted(() => {
 })
 
 const onLoad = () => {
-  const map = new Map({
-    target: 'mapDiv',
-    layers: tiandilayers,
-    view: new View({
-      center: fromLonLat([121.397428, 31.13923]), // 设置地图中心点坐标（例如：北京）
-      zoom: 10 // 设置初始缩放级别
-      // projection:"EPSG:4326"
+  mapboxgl.accessToken =
+    'pk.eyJ1Ijoid3lqcSIsImEiOiJjbDBnZDdwajUxMXRzM2htdWxubDh1MzJrIn0.2e2_rdU2nOUvtwltBIZtZg'
+  const map = new mapboxgl.Map({
+    container: 'mapDiv',
+    center: [121.397428, 31.15923], // 设置地图中心点坐标（例如：北京）
+    zoom: 9.5, // 设置初始缩放级别,
+    style: {
+      version: 8,
+      sources: {},
+      layers: [] //121.397428, 31.13923
+    }
+  })
+  map.on('load', () => {
+    tiandilayers.forEach((item) => {
+      addRasterTileLayer(map, item.url, item.id, item.id)
     })
+    addGeoJsonLayer(map, 'source-geojson', 'layer-geojson')
+  })
+}
+
+const addRasterTileLayer = (map, url, sourceId, layerId) => {
+  map.addSource(sourceId, {
+    type: 'raster',
+    tiles: [url]
+  })
+  map.addLayer({
+    id: layerId,
+    type: 'raster',
+    source: sourceId
+  })
+}
+
+const addGeoJsonLayer = (map, sourceId, layerId) => {
+  map.addSource(sourceId, {
+    type: 'geojson',
+    data: '/src/geoJson/lifeServices.geojson'
+  })
+  map.addLayer({
+    id: layerId,
+    type: 'circle',
+    source: sourceId,
+    // layout: {
+    //   'icon-size': 3, //图标大小
+    //   'icon-image': 'museum-15' //图片名称
+    //   // 'fill-color': '#fbb03b', //面颜色
+    //   // 'fill-opacity': 0.7 // 面透明度
+    // },
+
+    paint: {
+      // make circles larger as the user zooms from z12 to z22
+      'circle-radius': {
+        base: 150.75,
+        stops: [
+          [12, 2],
+          [22, 180]
+        ]
+      },
+      //'circle-radius':13,
+      'circle-color': '#B42222'
+    }
   })
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="mid-container">这里是数据采集</div>
+  <div>这里是数据采集</div>
 </template>
 
 <script setup>
