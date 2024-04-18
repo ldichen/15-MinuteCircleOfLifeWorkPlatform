@@ -1,9 +1,9 @@
 <template>
   <el-header><Header></Header></el-header>
   <div id="mapDiv"></div>
-  <div class="aside">
+  <div class="aside" id="aside">
     <el-menu>
-      <el-menu-item @click="Pop('dcShow')"
+      <el-menu-item @click="onCapture"
         ><div class="aside-img-svg">
           <img src="@/assets/images/dataCapture.svg" alt="" style="width: 2rem" />
         </div>
@@ -42,14 +42,20 @@
   <div id="rightContainer" class="right-container">
     <dataStatistic></dataStatistic>
   </div>
+  <Teleport v-if="data.editShow" to="#editPopUp">
+    <editPopForm @popCancel="onCancel" :editInfo="data.editInfo"></editPopForm>
+  </Teleport>
 </template>
 
 <script setup>
-import { reactive, toRefs, onMounted } from 'vue'
+import { reactive, toRefs, onMounted, createApp, ref } from 'vue'
 import mapboxgl from 'mapbox-gl'
+import 'mapbox-gl/dist/mapbox-gl.css'
+import MapboxDraw from '@mapbox/mapbox-gl-draw'
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import Header from '@/components/header.vue'
 import tiandilayers from '@/layers/layers'
-import { fromLonLat } from 'ol/proj'
+import geoJsonDataUrl from '@/geoJson/index.js'
 import dataStatistic from '@/views/modulesRight/dataStatistic.vue'
 import comScores from '@/views/modulesRight/comScores.vue'
 import dataManagerment from '@/views/modulesMid/dataManagerment.vue'
@@ -57,6 +63,7 @@ import dataReview from '@/views/modulesMid/dataReview.vue'
 import PositionHelper from '@/utils/PositionHelper.js'
 import dataCapture from '@/views/modulesMid/dataCapture.vue'
 import rightsManagement from '@/views/modulesMid/rightsManagement.vue'
+import editPopForm from '@/views/editPopForm.vue'
 
 const data = reactive({
   shows: {
@@ -65,16 +72,30 @@ const data = reactive({
     rmShow: false,
     csShow: true,
     dcShow: false
-  }
+  },
+  editShow: false,
+  geoLayers: [],
+  editInfo: { editTime: '', editLngLat: [] },
+  hoveredStateId: null
 })
 onMounted(() => {
   onLoad()
 })
 
+const draw = new MapboxDraw({
+  displayControlsDefault: false,
+  controls: {
+    point: true,
+    line_string: true,
+    polygon: true,
+    trash: true
+  }
+})
+var map = null
 const onLoad = () => {
   mapboxgl.accessToken =
     'pk.eyJ1Ijoid3lqcSIsImEiOiJjbDBnZDdwajUxMXRzM2htdWxubDh1MzJrIn0.2e2_rdU2nOUvtwltBIZtZg'
-  const map = new mapboxgl.Map({
+  map = new mapboxgl.Map({
     container: 'mapDiv',
     center: [121.397428, 31.15923], // 设置地图中心点坐标（例如：北京）
     zoom: 9.5, // 设置初始缩放级别,
@@ -88,7 +109,132 @@ const onLoad = () => {
     tiandilayers.forEach((item) => {
       addRasterTileLayer(map, item.url, item.id, item.id)
     })
-    addGeoJsonLayer(map, 'source-geojson', 'layer-geojson')
+    onReloadGeoJson()
+    //配置鼠标悬停移动事件
+    onMouseMap()
+    //设置点击事件，触发弹框
+    map.on('click', data.geoLayers, handleClickPopUp)
+
+    // 监听绘制完成事件
+    map.on('draw.create', handleCreateEdit)
+  })
+}
+
+//鼠标悬停、移除事件
+const onMouseMap = () => {
+  //鼠标悬停事件
+  map.on('mousemove', data.geoLayers, (e) => {
+    map.getCanvas().style.cursor = 'pointer'
+    let features = map.queryRenderedFeatures(e.point)
+    if (features.length > 0) {
+      let feature = features[0]
+      console.log(feature)
+      if (data.hoveredStateId) {
+        // setFeatureState 和 setFilter 是两种不同的写法(都可以)
+        // hover时给该区域填充颜色
+        map.setFeatureState({ source: feature.layer.id, id: data.hoveredStateId }, { hover: false })
+        // hover时出现区域边界线
+        // map.setFilter('state-borders', [
+        //   '==',
+        //   'name',
+        //   e.features[0].properties.name
+        // ]) /* 通过设置filter更新要显示的数据，即出现鼠标悬停之后的变色效果 */
+      }
+      data.hoveredStateId = feature.id // ps:加载的geoJson  feature 里面必须设定一个id 属性,用于定位哪个区域需要高亮。如果原文件没有，可以手动在原文件上添加id 属性并设置对应的id 数字
+      map.setFeatureState({ source: feature.layer.id, id: data.hoveredStateId }, { hover: true })
+    }
+  })
+  //鼠标移除事件
+  map.on('mouseleave', data.geoLayers, (e) => {
+    map.getCanvas().style.cursor = ''
+  })
+}
+
+//查看节点信息pop
+const detailPopUp = new mapboxgl.Popup({
+  closeButton: true, // 是否显示关闭按钮
+  closeOnClick: true // 是否在点击地图其它部分时关闭弹出窗口
+})
+
+//提交表单pop
+const submitPopUp = new mapboxgl.Popup({
+  closeButton: true, // 是否显示关闭按钮
+  closeOnClick: false // 是否在点击地图其它部分时关闭弹出窗口
+})
+const onCapture = () => {
+  // console.log('draw')
+  editEnter()
+  changePage('edit')
+  map.addControl(draw, 'bottom-right')
+  //关闭弹窗事件
+  map.off('click', data.geoLayers, handleClickPopUp)
+}
+
+//点击要素弹框事件
+const handleClickPopUp = (e) => {
+  let features = map.queryRenderedFeatures(e.point)
+  if (features.length > 0) {
+    // 获取点击到的第一个要素
+    let feature = features[0]
+
+    // 构建弹框的 HTML 内容
+    let popupContent =
+      '<h3>' +
+      feature.properties.name +
+      '</h3>' +
+      '<p>属性信息: ' +
+      JSON.stringify(feature.properties) +
+      '</p>'
+
+    console.log(e.lngLat)
+    // 创建弹框并设置位置
+    detailPopUp.setLngLat(e.lngLat).setHTML(popupContent).addTo(map)
+  }
+}
+
+//完成绘制的弹窗事件
+
+//绘制完成事件
+const handleCreateEdit = (e) => {
+  let lngLat = [e.features[0].geometry.coordinates[0], e.features[0].geometry.coordinates[1]]
+
+  let popupContent = '<div id="editPopUp"></div>'
+  submitPopUp.setLngLat(lngLat).setHTML(popupContent).addTo(map)
+  data.editShow = true
+  var stamp = new Date().getTime() + 8 * 60 * 60 * 1000
+
+  // 格式化北京时间为"YYYY-MM-DD HH:mm:ss"
+  var beijingTime = new Date(stamp)
+    .toISOString()
+    .replace(/T/, ' ')
+    .replace(/\..+/, '')
+    .substring(0, 19)
+  data.editInfo.editLngLat = lngLat
+  data.editInfo.editTime = beijingTime
+  submitPopUp.on('close', () => {
+    data.editShow = false
+  })
+}
+
+//删除编辑节点
+const onCancel = () => {
+  if (submitPopUp.isOpen()) {
+    // 检查 Popup 是否处于打开状态
+    submitPopUp.remove() // 关闭并移除 Popup
+  }
+}
+
+//重新载入geojson数据
+const onReloadGeoJson = () => {
+  geoJsonDataUrl.forEach((item) => {
+    if (map.getLayer(item.name)) {
+      map.removeLayer(item.name)
+    }
+  })
+
+  geoJsonDataUrl.forEach((item) => {
+    addGeoJsonLayer(map, item.url, item.name, item.name)
+    data.geoLayers.push(item.name)
   })
 }
 
@@ -104,33 +250,27 @@ const addRasterTileLayer = (map, url, sourceId, layerId) => {
   })
 }
 
-const addGeoJsonLayer = (map, sourceId, layerId) => {
+const addGeoJsonLayer = (map, url, sourceId, layerId) => {
   map.addSource(sourceId, {
     type: 'geojson',
-    data: '/src/geoJson/lifeServices.geojson'
+    data: url
   })
   map.addLayer({
     id: layerId,
     type: 'circle',
     source: sourceId,
-    // layout: {
-    //   'icon-size': 3, //图标大小
-    //   'icon-image': 'museum-15' //图片名称
-    //   // 'fill-color': '#fbb03b', //面颜色
-    //   // 'fill-opacity': 0.7 // 面透明度
-    // },
-
     paint: {
       // make circles larger as the user zooms from z12 to z22
       'circle-radius': {
-        base: 150.75,
+        type: 'exponential',
+        base: 2,
         stops: [
-          [12, 2],
-          [22, 180]
+          [7, 8],
+          [16, 8]
         ]
       },
-      //'circle-radius':13,
-      'circle-color': '#B42222'
+      'circle-color': '#627BC1',
+      'circle-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0.5, 1]
     }
   })
 }
@@ -145,6 +285,13 @@ const changePage = (page) => {
       }
     }
   }
+}
+
+const editEnter = () => {
+  const RightIds = ['rightContainer']
+  const asideIds = ['aside']
+  PositionHelper.leaveRightActions(RightIds, 0)
+  PositionHelper.leaveLeftActions(asideIds, 0)
 }
 
 const Enter = () => {
@@ -231,5 +378,14 @@ const Pop = (page) => {
 }
 .fade-leave-to {
   opacity: 0;
+}
+:deep(.mapboxgl-popup) {
+  max-width: 1000px !important;
+}
+:deep(.mapboxgl-popup-content) {
+  padding: unset !important;
+}
+:deep(.mapboxgl-popup-close-button) {
+  font-size: 25px;
 }
 </style>

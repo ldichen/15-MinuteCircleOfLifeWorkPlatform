@@ -1,0 +1,164 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4633, 31.2342]
+      },
+      "properties": {
+        "id": 31,
+        "name": "火炬园站（公交站）",
+        "type": "交通服务",
+        "time": "2022-12-12 12:12:12",
+        "com": "新华街道",
+        "lon": 121.5344,
+        "lat": 31.2314
+        }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4861, 31.2246]
+      },
+      "properties": {
+        "id": 32,
+        "name": "环线路站（公交站）",
+        "type": "交通服务",
+        "time": "2022-12-12 14:47:31",
+        "com": "中山北路",
+        "lon": 121.4861,
+        "lat": 31.2246
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4984, 31.2041]
+      },
+        "properties": {"id": 33,
+        "name": "北部新区站（地铁站）",
+        "type": "交通服务",
+        "time": "2022-12-12 11:19:10",
+        "com": "金陵西路",
+        "lon": 121.4984,
+        "lat": 31.2041
+        }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4467, 31.2254]
+      },
+      "properties": {
+        "id": 34,
+        "name": "中心公园站（公交站）",
+        "type": "交通服务",
+        "time": "2022-12-12 17:56:58",
+        "com": "中山北路",
+        "lon": 121.4467,
+        "lat": 31.2254
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.5112, 31.2381]
+      },
+      "properties": {
+        "id": 35,
+        "name": "金桥站（地铁站）",
+        "type": "交通服务",
+        "time": "2022-12-12 19:02:05",
+        "com": "南京东路",
+        "lon": 121.5112,
+        "lat": 31.2381
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4674, 31.2417]
+      },
+      "properties": {
+        "id": 36,
+        "name": "市政广场站（公交站）",
+        "type": "交通服务",
+        "time": "2022-12-12 13:40:40",
+        "com": "人民广场",
+        "lon": 121.4674,
+        "lat": 31.2417
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4798, 31.2295]
+      },
+      "properties": {
+        "id": 37,
+        "name": "新天地站（地铁站）",
+        "type": "交通服务",
+        "time": "2022-12-12 22:33:41",
+        "com": "人民广场",
+        "lon": 121.4798,
+        "lat": 31.2295
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4909, 31.2198]
+      },
+      "properties": {
+        "id": 38,
+        "name": "东方明珠站（观光点）",
+        "type": "交通服务",
+        "time": "2022-12-12 10:18:05",
+        "com": "长安街",
+        "lon": 121.4909,
+        "lat": 31.2198
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4598, 31.2433]
+      },
+      "properties": {
+        "id": 39,
+        "name": "老街站（公交站）",
+        "type": "交通服务",
+        "time": "2022-12-12 17:36:30",
+        "com": "松江路",
+        "lon": 121.4598,
+        "lat": 31.2433
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4853, 31.2087]
+      },
+      "properties": {
+        "id": 40,
+        "name": "科技园站（公交站）",
+        "type": "交通服务",
+        "time": "2022-12-12 08:52:57",
+        "com": "延安西路",
+        "lon": 121.4853,
+        "lat": 31.2087
+      }
+    }
+  ]
+}

@@ -1,0 +1,175 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "id": 21,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4503, 31.2217]
+      },
+      "properties": {
+        "id": 21,
+        "name": "上海体育场",
+        "type": "体育服务",
+        "time": "2024-03-21 21:36:12",
+        "com": "天钥桥路",
+        "lon": 121.4503,
+        "lat": 31.2217
+      }
+    },
+    {
+      "id": 22,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4768, 31.2445]
+      },
+      "properties": {
+        "id": 22,
+        "name": "上海体育馆",
+        "type": "体育服务",
+        "time": "2023-12-24 09:30:44",
+        "com": "大渡河路",
+        "lon": 121.4768,
+        "lat": 31.2445
+      }
+    },
+    {
+      "id": 23,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4936, 31.2085]
+      },
+      "properties": {
+        "id": 23,
+        "name": "源深体育馆",
+        "type": "体育服务",
+        "time": "2023-07-05 14:43:22",
+        "com": "桃林路",
+        "lon": 121.4936,
+        "lat": 31.2085
+      }
+    },
+    {
+      "id": 24,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4338, 31.2288]
+      },
+      "properties": {
+        "id": 24,
+        "name": "上海游泳馆",
+        "type": "体育服务",
+        "time": "2023-08-25 15:03:08",
+        "com": "中山南二路",
+        "lon": 121.4338,
+        "lat": 31.2288
+      }
+    },
+    {
+      "id": 25,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.5049, 31.2434]
+      },
+      "properties": {
+        "id": 25,
+        "name": "上海美兰湖高尔夫俱乐部",
+        "type": "体育服务",
+        "time": "2023-05-03 10:43:53",
+        "com": "美兰湖路",
+        "lon": 121.5049,
+        "lat": 31.2434
+      }
+    },
+    {
+      "id": 26,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4597, 31.2451]
+      },
+      "properties": {
+        "id": 26,
+        "name": "佘山国际高尔夫俱乐部",
+        "type": "体育服务",
+        "time": "2024-03-03 15:12:02",
+        "com": "林荫新路",
+        "lon": 121.4597,
+        "lat": 31.2451
+      }
+    },
+    {
+      "id": 27,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4835, 31.2301]
+      },
+      "properties": {
+        "id": 27,
+        "name": "上海高塔篮球中心",
+        "type": "体育服务",
+        "time": "2024-04-01 20:30:42",
+        "com": "向阳路",
+        "lon": 121.4835,
+        "lat": 31.2301
+      }
+    },
+    {
+      "id": 28,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4967, 31.2226]
+      },
+      "properties": {
+        "id": 28,
+        "name": "上海莘福羽毛球馆",
+        "type": "体育服务",
+        "time": "2024-02-05 17:00:25",
+        "com": "莘福路",
+        "lon": 121.4967,
+        "lat": 31.2226
+      }
+    },
+    {
+      "id": 29,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4579, 31.2389]
+      },
+      "properties": {
+        "id": 29,
+        "name": "上海虹口足球场",
+        "type": "体育服务",
+        "time": "2023-10-15 13:30:55",
+        "com": "东江湾路",
+        "lon": 121.4579,
+        "lat": 31.2389
+      }
+    },
+    {
+      "id": 30,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4893, 31.2114]
+      },
+      "properties": {
+        "id": 30,
+        "name": "上海大学生运动中心",
+        "type": "体育服务",
+        "time": "2023-05-21 09:05:42",
+        "com": "文翔路",
+        "lon": 121.4893,
+        "lat": 31.2114
+      }
+    }
+  ]
+}

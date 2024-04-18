@@ -1,0 +1,175 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "id": 1,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4579, 31.2192]
+      },
+      "properties": {
+        "id": 1,
+        "name": "协和医院",
+        "type": "医疗服务",
+        "time": "2022-12-12 23:39:10",
+        "com": "南京东路",
+        "lon": 121.4579,
+        "lat": 31.2192
+      }
+    },
+    {
+      "id": 2,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4723, 31.2436]
+      },
+      "properties": {
+        "id": 2,
+        "name": "人民医院",
+        "type": "医疗服务",
+        "time": "2022-12-12 11:53:45",
+        "com": "延安西路",
+        "lon": 121.4723,
+        "lat": 31.2436
+      }
+    },
+    {
+      "id": 3,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4875, 31.2107]
+      },
+      "properties": {
+        "id": 3,
+        "name": "第一人民医院",
+        "type": "医疗服务",
+        "time": "2022-12-12 19:29:51",
+        "com": "金陵西路",
+        "lon": 121.4875,
+        "lat": 31.2107
+      }
+    },
+    {
+      "id": 14,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4381, 31.2279]
+      },
+      "properties": {
+        "id": 14,
+        "name": "肿瘤医院",
+        "type": "医疗服务",
+        "time": "2022-12-12 08:34:56",
+        "com": "长安街",
+        "lon": 121.4381,
+        "lat": 31.2279
+      }
+    },
+    {
+      "id": 15,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.5004, 31.2419]
+      },
+      "properties": {
+        "id": 15,
+        "name": "儿童医院",
+        "type": "医疗服务",
+        "time": "2022-12-12 09:56:05",
+        "com": "长安街",
+        "lon": 121.5004,
+        "lat": 31.2419
+      }
+    },
+    {
+      "id": 16,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4598, 31.2411]
+      },
+      "properties": {
+        "id": 16,
+        "name": "心血管病医院",
+        "type": "医疗服务",
+        "time": "2022-12-12 10:35:41",
+        "com": "浦东大道",
+        "lon": 121.4598,
+        "lat": 31.2411
+      }
+    },
+    {
+      "id": 17,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4796, 31.2324]
+      },
+      "properties": {
+        "id": 17,
+        "name": "传染病医院",
+        "type": "医疗服务",
+        "time": "2022-12-12 10:10:08",
+        "com": "长安街",
+        "lon": 121.4796,
+        "lat": 31.2324
+      }
+    },
+    {
+      "id": 18,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4922, 31.2216]
+      },
+      "properties": {
+        "id": 18,
+        "name": "东方医院",
+        "type": "医疗服务",
+        "time": "2022-12-12 12:26:35",
+        "com": "南京东路",
+        "lon": 121.4922,
+        "lat": 31.2216
+      }
+    },
+    {
+      "id": 19,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4536, 31.2398]
+      },
+      "properties": {
+        "id": 19,
+        "name": "中西医结合医院",
+        "type": "医疗服务",
+        "time": "2022-12-12 22:32:38",
+        "com": "中山北路",
+        "lon": 121.4536,
+        "lat": 31.2398
+      }
+    },
+    {
+      "id": 20,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4809, 31.2137]
+      },
+      "properties": {
+        "id": 20,
+        "name": "精神卫生中心",
+        "type": "医疗服务",
+        "time": "2022-12-12 14:16:41",
+        "com": "长安街",
+        "lon": 121.4809,
+        "lat": 31.2137
+      }
+    }
+  ]
+}

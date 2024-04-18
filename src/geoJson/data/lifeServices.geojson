@@ -1,0 +1,175 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "id": 1,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.5344, 31.2314]
+      },
+      "properties": {
+        "id": 1,
+        "name": "北桥集市",
+        "type": "生活服务",
+        "time": "2022-12-12 12:12:12",
+        "com": "新华街道",
+        "lon": 121.5344,
+        "lat": 31.2314
+      }
+    },
+    {
+      "id": 2,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.7227, 31.2075]
+      },
+      "properties": {
+        "id": 2,
+        "name": "环球超市",
+        "type": "生活服务",
+        "time": "2023-11-11 10:11:58",
+        "com": "吴中路",
+        "lon": 121.7227,
+        "lat": 31.2075
+      }
+    },
+    {
+      "id": 3,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4818, 31.0216]
+      },
+      "properties": {
+        "id": 3,
+        "name": "永辉超市",
+        "type": "生活服务",
+        "time": "2023-06-22 09:30:25",
+        "com": "广富林路",
+        "lon": 121.4818,
+        "lat": 31.0216
+      }
+    },
+    {
+      "id": 4,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.5967, 31.2545]
+      },
+      "properties": {
+        "id": 4,
+        "name": "上海邮政物流速递",
+        "type": "生活服务",
+        "time": "2024-03-13 11:30:35",
+        "com": "家塘公路",
+        "lon": 121.5967,
+        "lat": 31.2545
+      }
+    },
+    {
+      "id": 5,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4472, 31.2643]
+      },
+      "properties": {
+        "id": 5,
+        "name": "上海顺丰快递",
+        "type": "生活服务",
+        "time": "2024-01-25 09:00:38",
+        "com": "新渔东路",
+        "lon": 121.4472,
+        "lat": 31.2643
+      }
+    },
+    {
+      "id": 6,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.6642, 31.1692]
+      },
+      "properties": {
+        "id": 6,
+        "name": "中国银行",
+        "type": "生活服务",
+        "time": "2023-04-21 10:35:32",
+        "com": "怒江路",
+        "lon": 121.6642,
+        "lat": 31.1692
+      }
+    },
+    {
+      "id": 7,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.8139, 31.0875]
+      },
+      "properties": {
+        "id": 7,
+        "name": "中国建设银行",
+        "type": "生活服务",
+        "time": "2023-08-11 16:20:22",
+        "com": "武康路",
+        "lon": 121.8139,
+        "lat": 31.0875
+      }
+    },
+    {
+      "id": 8,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.7001, 31.2327]
+      },
+      "properties": {
+        "id": 8,
+        "name": "中国农业银行",
+        "type": "生活服务",
+        "time": "2023-11-26 17:05:25",
+        "com": "茅台路",
+        "lon": 121.7001,
+        "lat": 31.2327
+      }
+    },
+    {
+      "id": 9,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.5888, 31.0834]
+      },
+      "properties": {
+        "id": 9,
+        "name": "上海第一人民医院",
+        "type": "生活服务",
+        "time": "2023-02-15 21:45:56",
+        "com": "武进路",
+        "lon": 121.5888,
+        "lat": 31.0834
+      }
+    },
+    {
+      "id": 10,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4208, 31.2319]
+      },
+      "properties": {
+        "id": 10,
+        "name": "同济医院",
+        "type": "生活服务",
+        "time": "2024-03-23 07:35:20",
+        "com": "新村路",
+        "lon": 121.4208,
+        "lat": 31.2319
+      }
+    }
+  ]
+}

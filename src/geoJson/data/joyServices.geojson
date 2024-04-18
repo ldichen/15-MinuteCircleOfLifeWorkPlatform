@@ -1,0 +1,175 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "id": 1,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4855, 31.2364]
+      },
+      "properties": {
+        "id": 1,
+        "name": "星际娱乐城",
+        "type": "娱乐服务",
+        "time": "2022-12-12 03:59:31",
+        "com": "虹桥路",
+        "lon": 121.4855,
+        "lat": 31.2364
+      }
+    },
+    {
+      "id": 2,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4427, 31.2288]
+      },
+      "properties": {
+        "id": 2,
+        "name": "水上乐园",
+        "type": "娱乐服务",
+        "time": "2022-12-12 10:16:19",
+        "com": "南京东路",
+        "lon": 121.4427,
+        "lat": 31.2288
+      }
+    },
+    {
+      "id": 3,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.5073, 31.2162]
+      },
+      "properties": {
+        "id": 3,
+        "name": "未来影院",
+        "type": "娱乐服务",
+        "time": "2022-12-12 17:51:26",
+        "com": "复兴路",
+        "lon": 121.5073,
+        "lat": 31.2162
+      }
+    },
+    {
+      "id": 4,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4679, 31.2209]
+      },
+      "properties": {
+        "id": 4,
+        "name": "虚拟游戏场",
+        "type": "娱乐服务",
+        "time": "2022-12-12 00:39:33",
+        "com": "复兴路",
+        "lon": 121.4679,
+        "lat": 31.2209
+      }
+    },
+    {
+      "id": 5,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4896, 31.2467]
+      },
+      "properties": {
+        "id": 5,
+        "name": "海洋馆",
+        "type": "娱乐服务",
+        "time": "2022-12-12 10:01:44",
+        "com": "长安街",
+        "lon": 121.4896,
+        "lat": 31.2467
+      }
+    },
+    {
+      "id": 6,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4565, 31.2482]
+      },
+      "properties": {
+        "id": 6,
+        "name": "文化遗迹博物馆",
+        "type": "娱乐服务",
+        "time": "2022-12-12 13:50:07",
+        "com": "中山北路",
+        "lon": 121.4565,
+        "lat": 31.2482
+      }
+    },
+    {
+      "id": 7,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.5162, 31.2253]
+      },
+      "properties": {
+        "id": 7,
+        "name": "科技探索中心",
+        "type": "娱乐服务",
+        "time": "2022-12-12 23:24:58",
+        "com": "金陵西路",
+        "lon": 121.5162,
+        "lat": 31.2253
+      }
+    },
+    {
+      "id": 8,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4751, 31.2118]
+      },
+      "properties": {
+        "id": 8,
+        "name": "天文馆",
+        "type": "娱乐服务",
+        "time": "2022-12-12 19:09:41",
+        "com": "长安街",
+        "lon": 121.4751,
+        "lat": 31.2118
+      }
+    },
+    {
+      "id": 9,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4299, 31.2195]
+      },
+      "properties": {
+        "id": 9,
+        "name": "野生动物园",
+        "type": "娱乐服务",
+        "time": "2022-12-12 02:20:31",
+        "com": "松江路",
+        "lon": 121.4299,
+        "lat": 31.2195
+      }
+    },
+    {
+      "id": 10,
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [121.4997, 31.2006]
+      },
+      "properties": {
+        "id": 10,
+        "name": "国家植物园",
+        "type": "娱乐服务",
+        "time": "2022-12-12 16:29:40",
+        "com": "复兴路",
+        "lon": 121.4997,
+        "lat": 31.2006
+      }
+    }
+  ]
+}
