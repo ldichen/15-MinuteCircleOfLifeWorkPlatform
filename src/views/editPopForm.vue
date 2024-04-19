@@ -62,7 +62,7 @@ import { ElMessage, ElNotification } from 'element-plus'
 // import { ElForm, ElFormItem, ElInput, ElButton, ElSelect, ElFooter, ElOption } from 'element-plus'
 // import 'element-plus/dist/index.css'
 const props = defineProps(['editInfo'])
-const emits = defineEmits(['popCancel'])
+const emits = defineEmits(['popCancel', 'popSubmit'])
 onMounted(() => {
   initData()
 })
@@ -127,6 +127,7 @@ const onSubmit = () => {
         type: 'success',
         offset: 100
       })
+      emits('popSubmit')
     } else {
       ElMessage({
         message: '提交失败，请稍后重试!',
@@ -142,8 +143,6 @@ const onSubmit = () => {
 const onCancel = () => {
   emits('popCancel')
   //清除表单信息
-  // onCancel()
-  //关闭这个pop，这里通过调用父组件的方法
 }
 </script>
 

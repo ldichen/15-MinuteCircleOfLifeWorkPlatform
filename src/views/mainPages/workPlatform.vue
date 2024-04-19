@@ -1,5 +1,8 @@
 <template>
   <el-header><Header></Header></el-header>
+  <button style="position: absolute; top: 500; right: 500; z-index: 9999" @click="test">
+    test
+  </button>
   <div id="mapDiv"></div>
   <div class="aside" id="aside">
     <el-menu>
@@ -29,7 +32,7 @@
       >
     </el-menu>
   </div>
-
+  <!-- <div class="mapModal" v-if="data.editControl.isEdit"></div> -->
   <div>
     <dataCapture v-if="data.shows.dcShow" @dcLeave="Leave"></dataCapture>
     <dataReview v-if="data.shows.drShow" @drLeave="Leave"></dataReview>
@@ -43,7 +46,11 @@
     <dataStatistic></dataStatistic>
   </div>
   <Teleport v-if="data.editShow" to="#editPopUp">
-    <editPopForm @popCancel="onCancel" :editInfo="data.editInfo"></editPopForm>
+    <editPopForm
+      @popCancel="onCancel"
+      @popSubmit="onCaptureSubmit"
+      :editInfo="data.editInfo"
+    ></editPopForm>
   </Teleport>
 </template>
 
@@ -76,13 +83,14 @@ const data = reactive({
   editShow: false,
   geoLayers: [],
   editInfo: { editTime: '', editLngLat: [] },
-  hoveredStateId: null
+  hoveredStateId: null,
+  editControl: { selectedIds: [], isEdit: false, isSave: false }
 })
 onMounted(() => {
   onLoad()
 })
 
-const draw = new MapboxDraw({
+var draw = new MapboxDraw({
   displayControlsDefault: false,
   controls: {
     point: true,
@@ -139,6 +147,7 @@ const onMouseMap = () => {
         //   'name',
         //   e.features[0].properties.name
         // ]) /* 通过设置filter更新要显示的数据，即出现鼠标悬停之后的变色效果 */
+        console.log(feature)
       }
       data.hoveredStateId = feature.id // ps:加载的geoJson  feature 里面必须设定一个id 属性,用于定位哪个区域需要高亮。如果原文件没有，可以手动在原文件上添加id 属性并设置对应的id 数字
       map.setFeatureState({ source: feature.layer.id, id: data.hoveredStateId }, { hover: true })
@@ -168,6 +177,8 @@ const onCapture = () => {
   map.addControl(draw, 'bottom-right')
   //关闭弹窗事件
   map.off('click', data.geoLayers, handleClickPopUp)
+  //关闭地图交互事件并开启遮罩层
+  map.on('click', onEditState)
 }
 
 //点击要素弹框事件
@@ -192,17 +203,40 @@ const handleClickPopUp = (e) => {
   }
 }
 
-//完成绘制的弹窗事件
+//判断是否地图交互
+const onEditState = (e) => {
+  if (data.editControl.isEdit) {
+    draw.changeMode('simple_select', { featureIds: data.editControl.selectedIds })
+  }
+}
 
+const test = (testid) => {
+  console.log('test')
+  // 获取地图容器元素
+  // const mapContainer = document.getElementById('mapDiv') // 替换 'map' 为你的地图容器的 ID
+
+  // 禁用地图容器上的点击事件
+  // mapContainer.addEventListener('click', (e) => {
+  //   console.log('test2')
+  //   draw.changeMode('simple_select', { featureIds: data.editControl.selectedIds })
+  // })
+  // draw.changeMode('simple_select', { featureIds: ['111'] })
+}
 //绘制完成事件
 const handleCreateEdit = (e) => {
+  //标志进入编辑模式
+  data.editControl.isEdit = true
+  //获取绘制完成的经纬度信息
   let lngLat = [e.features[0].geometry.coordinates[0], e.features[0].geometry.coordinates[1]]
-
+  //记录编辑的节点id
+  data.editControl.selectedIds.push(e.features[0].id)
+  //构建弹框的 HTML 内容,并挂载
   let popupContent = '<div id="editPopUp"></div>'
   submitPopUp.setLngLat(lngLat).setHTML(popupContent).addTo(map)
+  //挂载自定义组件
   data.editShow = true
+  //获取编辑时间
   var stamp = new Date().getTime() + 8 * 60 * 60 * 1000
-
   // 格式化北京时间为"YYYY-MM-DD HH:mm:ss"
   var beijingTime = new Date(stamp)
     .toISOString()
@@ -211,14 +245,41 @@ const handleCreateEdit = (e) => {
     .substring(0, 19)
   data.editInfo.editLngLat = lngLat
   data.editInfo.editTime = beijingTime
+  //监听地图点击事件，保持该要素选中状态
+  map.on('click', onEditState)
+  //关闭弹窗事件
   submitPopUp.on('close', () => {
-    data.editShow = false
+    if (!data.editControl.isSave) {
+      // 删除选中的要素
+      data.editControl.selectedIds.forEach((featureId) => {
+        draw.delete(featureId) // 使用 Draw 插件的 delete 方法删除指定 ID 的要素
+      })
+    }
+    resetEditState()
   })
+}
+//
+
+//重置编辑状态
+const resetEditState = () => {
+  data.editShow = false
+  data.editControl.isEdit = false
+  data.editControl.selectedIds = []
+  data.editControl.isSave = false
+  map.off('click', onEditState)
 }
 
 //删除编辑节点
 const onCancel = () => {
   if (submitPopUp.isOpen()) {
+    // 检查 Popup 是否处于打开状态
+    submitPopUp.remove() // 关闭并移除 Popup
+  }
+}
+//完成提交
+const onCaptureSubmit = () => {
+  if (submitPopUp.isOpen()) {
+    data.editControl.isSave = true
     // 检查 Popup 是否处于打开状态
     submitPopUp.remove() // 关闭并移除 Popup
   }
@@ -359,7 +420,20 @@ const Pop = (page) => {
   background-color: #fff;
   border-radius: 50%;
 }
-
+.mapModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0);
+  z-index: 9998;
+}
+:deep(.mapboxgl-popup) {
+  z-index: 9999;
+}
 .up-scores {
   display: flex;
   flex-direction: column;
