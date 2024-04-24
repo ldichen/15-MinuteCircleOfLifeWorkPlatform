@@ -45,6 +45,7 @@ import { ElMessage, ElNotification } from 'element-plus'
 import { reactive, ref, toRefs } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search } from '@element-plus/icons-vue'
+import store from '@/store'
 
 const data = reactive({
   form: {
@@ -69,6 +70,7 @@ const submitForm = () => {
   form.value.validate((valid) => {
     if (valid) {
       data.loading = true
+      store.commit('setUserListInfo', data.form)
       //发送请求
       ElNotification({
         title: 'Success',

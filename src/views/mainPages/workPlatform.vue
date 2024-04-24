@@ -1,12 +1,12 @@
 <template>
   <el-header><Header></Header></el-header>
-  <button style="position: absolute; top: 500; right: 500; z-index: 9999" @click="test">
+  <!-- <button style="position: absolute; top: 500; right: 500; z-index: 9999" @click="test">
     test
-  </button>
+  </button> -->
   <div id="mapDiv"></div>
   <div class="aside" id="aside">
     <el-menu>
-      <el-menu-item @click="onCapture"
+      <el-menu-item index="1" @click="onCapture"
         ><div class="aside-img-svg">
           <img src="@/assets/images/dataCapture.svg" alt="" style="width: 2rem" />
         </div>
@@ -24,7 +24,9 @@
         </div>
         <span>数据管理</span></el-menu-item
       >
-      <el-menu-item @click="Pop('rmShow')"
+      <el-menu-item
+        @click="Pop('rmShow')"
+        v-if="store.state.userInfo.dataList[0].username == 'root'"
         ><div class="aside-img-svg">
           <img src="@/assets/images/rightsManagement.svg" alt="" style="width: 2rem" />
         </div>
@@ -39,13 +41,28 @@
     <dataManagerment v-if="data.shows.dmShow" @dmLeave="Leave"></dataManagerment>
     <rightsManagement v-if="data.shows.rmShow" @rmLeave="Leave"></rightsManagement>
   </div>
+  <el-button
+    class="leaveEditButton"
+    v-if="data.editShow"
+    @click="onLeaveEdit"
+    type="danger"
+    size="large"
+    >退出编辑</el-button
+  >
   <transition name="fade">
     <div id="UpScores" class="up-scores" v-if="data.shows.csShow"><comScores></comScores></div>
   </transition>
   <div id="rightContainer" class="right-container">
     <dataStatistic></dataStatistic>
   </div>
-  <Teleport v-if="data.editShow" to="#editPopUp">
+  <Teleport v-if="data.editControl.isEdit" to="#editPopUp">
+    <editPopForm
+      @popCancel="onCancel"
+      @popSubmit="onCaptureSubmit"
+      :editInfo="data.editInfo"
+    ></editPopForm>
+  </Teleport>
+  <Teleport v-if="data.isRead" to="#editPopUp">
     <editPopForm
       @popCancel="onCancel"
       @popSubmit="onCaptureSubmit"
@@ -71,6 +88,7 @@ import PositionHelper from '@/utils/PositionHelper.js'
 import dataCapture from '@/views/modulesMid/dataCapture.vue'
 import rightsManagement from '@/views/modulesMid/rightsManagement.vue'
 import editPopForm from '@/views/editPopForm.vue'
+import store from '@/store'
 
 const data = reactive({
   shows: {
@@ -82,9 +100,11 @@ const data = reactive({
   },
   editShow: false,
   geoLayers: [],
-  editInfo: { editTime: '', editLngLat: [] },
+  editInfo: {},
   hoveredStateId: null,
-  editControl: { selectedIds: [], isEdit: false, isSave: false }
+  editControl: { selectedIds: [], isEdit: false, isSave: false },
+  selectedIds: [],
+  isRead: false
 })
 onMounted(() => {
   onLoad()
@@ -136,7 +156,6 @@ const onMouseMap = () => {
     let features = map.queryRenderedFeatures(e.point)
     if (features.length > 0) {
       let feature = features[0]
-      console.log(feature)
       if (data.hoveredStateId) {
         // setFeatureState 和 setFilter 是两种不同的写法(都可以)
         // hover时给该区域填充颜色
@@ -147,7 +166,6 @@ const onMouseMap = () => {
         //   'name',
         //   e.features[0].properties.name
         // ]) /* 通过设置filter更新要显示的数据，即出现鼠标悬停之后的变色效果 */
-        console.log(feature)
       }
       data.hoveredStateId = feature.id // ps:加载的geoJson  feature 里面必须设定一个id 属性,用于定位哪个区域需要高亮。如果原文件没有，可以手动在原文件上添加id 属性并设置对应的id 数字
       map.setFeatureState({ source: feature.layer.id, id: data.hoveredStateId }, { hover: true })
@@ -170,15 +188,43 @@ const submitPopUp = new mapboxgl.Popup({
   closeButton: true, // 是否显示关闭按钮
   closeOnClick: false // 是否在点击地图其它部分时关闭弹出窗口
 })
+
+//数据采集
 const onCapture = () => {
-  // console.log('draw')
+  map.addControl(draw, 'bottom-right')
+  reLoadauditsData('all')
   editEnter()
   changePage('edit')
-  map.addControl(draw, 'bottom-right')
+  data.editShow = true
+  // 监听 Draw 控件的 selectionchange 事件
+  map.on('draw.selectionchange', onEditStateChange)
   //关闭弹窗事件
   map.off('click', data.geoLayers, handleClickPopUp)
-  //关闭地图交互事件并开启遮罩层
+  //关闭地图选中事件
   map.on('click', onEditState)
+}
+//重载审批数据
+const reLoadauditsData = (type) => {
+  let auditsData = store.state.auditsDataInfo.dataList
+  if (auditsData.length) {
+    if (type == 'all') {
+      auditsData.forEach((item) => {
+        draw.add(item)
+      })
+    } else if (type == 'last') {
+      draw.add(auditsData[auditsData.length - 1])
+    }
+  }
+}
+
+//退出数据采集
+const onLeaveEdit = () => {
+  data.editShow = false
+  resetEditState()
+  editLeave('edit')
+  map.on('click', data.geoLayers, handleClickPopUp)
+  map.off('click', onEditState)
+  map.removeControl(draw, 'bottom-right')
 }
 
 //点击要素弹框事件
@@ -203,25 +249,65 @@ const handleClickPopUp = (e) => {
   }
 }
 
-//判断是否地图交互
+//判断是否要素选中
 const onEditState = (e) => {
   if (data.editControl.isEdit) {
     draw.changeMode('simple_select', { featureIds: data.editControl.selectedIds })
   }
 }
 
-const test = (testid) => {
-  console.log('test')
-  // 获取地图容器元素
-  // const mapContainer = document.getElementById('mapDiv') // 替换 'map' 为你的地图容器的 ID
-
-  // 禁用地图容器上的点击事件
-  // mapContainer.addEventListener('click', (e) => {
-  //   console.log('test2')
-  //   draw.changeMode('simple_select', { featureIds: data.editControl.selectedIds })
-  // })
-  // draw.changeMode('simple_select', { featureIds: ['111'] })
+//选中状态变化
+const onEditStateChange = (e) => {
+  //判断当前是否处于编辑要素状态
+  if (data.editControl.isEdit == true) {
+    console.log(data.editControl.isEdit)
+    return
+  } else {
+    console.log(e)
+    //非编辑要素状态
+    //判断是否有选中要素
+    if (e.features.length > 0) {
+      data.isRead = true
+      const selectedFeature = e.features[0]
+      if (selectedFeature.properties != undefined) {
+        if (selectedFeature.properties.state == 1) {
+          EditPopFormMount(selectedFeature.geometry.coordinates, 1)
+          data.editInfo = selectedFeature
+          submitPopUp.on('close', resetReadState)
+          console.log('Selected features:', selectedFeature)
+        }
+      } else {
+        console.log('no selected features')
+      }
+    }
+  }
 }
+//重置读取状态
+const resetReadState = () => {
+  data.isRead = false
+  submitPopUp.off('close', resetReadState)
+  console.log('resetReadState')
+}
+
+//pop页面挂载
+const EditPopFormMount = (lngLat, state) => {
+  if (submitPopUp.isOpen()) {
+    // 检查 Popup 是否处于打开状态
+    submitPopUp.remove() // 关闭并移除 Popup
+  }
+  if (state == 0) {
+    console.log('挂载编辑弹窗')
+    //第一次绘制要素
+    let popupContent = '<div id="editPopUp"></div>'
+    submitPopUp.setLngLat(lngLat).setHTML(popupContent).addTo(map)
+  } else if (state == 1) {
+    console.log('挂载信息弹窗')
+    //点击查看已提交内容
+    let popupContent = '<div id="editPopUp"></div>'
+    submitPopUp.setLngLat(lngLat).setHTML(popupContent).addTo(map)
+  }
+}
+
 //绘制完成事件
 const handleCreateEdit = (e) => {
   //标志进入编辑模式
@@ -231,10 +317,7 @@ const handleCreateEdit = (e) => {
   //记录编辑的节点id
   data.editControl.selectedIds.push(e.features[0].id)
   //构建弹框的 HTML 内容,并挂载
-  let popupContent = '<div id="editPopUp"></div>'
-  submitPopUp.setLngLat(lngLat).setHTML(popupContent).addTo(map)
-  //挂载自定义组件
-  data.editShow = true
+  EditPopFormMount(lngLat, 0)
   //获取编辑时间
   var stamp = new Date().getTime() + 8 * 60 * 60 * 1000
   // 格式化北京时间为"YYYY-MM-DD HH:mm:ss"
@@ -243,30 +326,36 @@ const handleCreateEdit = (e) => {
     .replace(/T/, ' ')
     .replace(/\..+/, '')
     .substring(0, 19)
+  data.editInfo.id = e.features[0].id
   data.editInfo.editLngLat = lngLat
+  data.editInfo.state = 0
   data.editInfo.editTime = beijingTime
   //监听地图点击事件，保持该要素选中状态
   map.on('click', onEditState)
   //关闭弹窗事件
-  submitPopUp.on('close', () => {
-    if (!data.editControl.isSave) {
-      // 删除选中的要素
-      data.editControl.selectedIds.forEach((featureId) => {
-        draw.delete(featureId) // 使用 Draw 插件的 delete 方法删除指定 ID 的要素
-      })
-    }
-    resetEditState()
-  })
+  submitPopUp.on('close', onEditClosePop)
 }
-//
+//关闭弹窗删除当前编辑要素
+const onEditClosePop = () => {
+  if (!data.editControl.isSave) {
+    // 删除选中的要素
+    data.editControl.selectedIds.forEach((featureId) => {
+      draw.delete(featureId) // 使用 Draw 插件的 delete 方法删除指定 ID 的要素
+    })
+  }
+  //初始化编辑信息
+  resetEditState()
+}
 
 //重置编辑状态
 const resetEditState = () => {
-  data.editShow = false
   data.editControl.isEdit = false
   data.editControl.selectedIds = []
   data.editControl.isSave = false
+  data.editInfo = {}
   map.off('click', onEditState)
+  submitPopUp.off('close', onEditClosePop)
+  console.log('resetEditState')
 }
 
 //删除编辑节点
@@ -282,6 +371,7 @@ const onCaptureSubmit = () => {
     data.editControl.isSave = true
     // 检查 Popup 是否处于打开状态
     submitPopUp.remove() // 关闭并移除 Popup
+    reLoadauditsData('last')
   }
 }
 
@@ -353,6 +443,13 @@ const editEnter = () => {
   const asideIds = ['aside']
   PositionHelper.leaveRightActions(RightIds, 0)
   PositionHelper.leaveLeftActions(asideIds, 0)
+}
+const editLeave = (type) => {
+  data.shows[type] = false
+  const RightIds = ['rightContainer']
+  const asideIds = ['aside']
+  PositionHelper.enterLeftActions(asideIds, 0)
+  PositionHelper.enterRightActions(RightIds, 0)
 }
 
 const Enter = () => {
@@ -432,7 +529,7 @@ const Pop = (page) => {
   z-index: 9998;
 }
 :deep(.mapboxgl-popup) {
-  z-index: 9999;
+  z-index: 5;
 }
 .up-scores {
   display: flex;
@@ -461,5 +558,17 @@ const Pop = (page) => {
 }
 :deep(.mapboxgl-popup-close-button) {
   font-size: 25px;
+}
+.leaveEditButton {
+  bottom: 10px;
+  right: 60px;
+  position: absolute;
+  z-index: 999;
+}
+:deep(.mapboxgl-ctrl-bottom-left) {
+  display: none;
+}
+:deep(.mapboxgl-ctrl-bottom-right) {
+  display: block;
 }
 </style>

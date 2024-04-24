@@ -18,7 +18,7 @@ const data = reactive({})
 <style scoped>
 .header {
   position: absolute;
-  z-index: 9999;
+  z-index: 999;
   width: 100%;
   opacity: 0.8;
 }
