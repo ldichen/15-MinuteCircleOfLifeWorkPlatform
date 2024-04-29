@@ -213,8 +213,9 @@ const closePop = () => {
   justify-content: center;
   /* margin-top: 1rem; */
 }
-.drtable-rows {
+:deep(.drtable-rows) {
   line-height: 2rem;
+  color: black !important;
 }
 :deep(.el-drawer) {
   top: 4.5rem !important;

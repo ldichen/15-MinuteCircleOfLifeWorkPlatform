@@ -18,6 +18,18 @@
         </div>
         <span>数据审核</span></el-menu-item
       >
+      <el-menu-item
+        ><div class="aside-img-svg">
+          <img src="@/assets/images/calculate.svg" alt="" style="width: 1.6rem" />
+        </div>
+        <span>在线计算</span></el-menu-item
+      >
+      <el-menu-item
+        ><div class="aside-img-svg">
+          <img src="@/assets/images/moduleImport.svg" alt="" style="width: 1.6rem" />
+        </div>
+        <span>模块导入</span></el-menu-item
+      >
       <el-menu-item @click="Pop('dmShow')"
         ><div class="aside-img-svg">
           <img src="@/assets/images/dataManagerment.svg" alt="" style="width: 2rem" />
@@ -89,6 +101,7 @@ import dataCapture from '@/views/modulesMid/dataCapture.vue'
 import rightsManagement from '@/views/modulesMid/rightsManagement.vue'
 import editPopForm from '@/views/editPopForm.vue'
 import store from '@/store'
+import { requiredNumber } from 'element-plus/es/components/table-v2/src/common'
 
 const data = reactive({
   shows: {
@@ -138,6 +151,10 @@ const onLoad = () => {
       addRasterTileLayer(map, item.url, item.id, item.id)
     })
     onReloadGeoJson()
+    map.on('styleimagemissing', (e) => {
+      console.log('styleimagemissing')
+    })
+
     //配置鼠标悬停移动事件
     onMouseMap()
     //设置点击事件，触发弹框
@@ -147,6 +164,11 @@ const onLoad = () => {
     map.on('draw.create', handleCreateEdit)
   })
 }
+
+// const test = () => {
+//   console.log('test')
+//   onReloadGeoJson()
+// }
 
 //鼠标悬停、移除事件
 const onMouseMap = () => {
@@ -236,14 +258,24 @@ const handleClickPopUp = (e) => {
 
     // 构建弹框的 HTML 内容
     let popupContent =
-      '<h3>' +
+      '<div style="width: 200px;height: 180px;margin: 0 20px">' +
+      '<h3 style="text-align:center">' +
       feature.properties.name +
       '</h3>' +
-      '<p>属性信息: ' +
-      JSON.stringify(feature.properties) +
-      '</p>'
-
-    console.log(e.lngLat)
+      '<p>服务类型: ' +
+      feature.properties.type +
+      '</p>' +
+      '<p>所属社区: ' +
+      feature.properties.com +
+      '</p>' +
+      '<p>位置坐标: ' +
+      feature.properties.lon +
+      ' , ' +
+      feature.properties.lat +
+      '<p>创建时间: ' +
+      feature.properties.time +
+      '</p>' +
+      '</div>'
     // 创建弹框并设置位置
     detailPopUp.setLngLat(e.lngLat).setHTML(popupContent).addTo(map)
   }
@@ -263,7 +295,6 @@ const onEditStateChange = (e) => {
     console.log(data.editControl.isEdit)
     return
   } else {
-    console.log(e)
     //非编辑要素状态
     //判断是否有选中要素
     if (e.features.length > 0) {
@@ -400,30 +431,51 @@ const addRasterTileLayer = (map, url, sourceId, layerId) => {
     source: sourceId
   })
 }
+//图标地址
+const imageUrl = {
+  education: './src/assets/images/features/education.png',
+  joy: './src/assets/images/features/joy.png',
+  life: './src/assets/images/features/life.png',
+  medical: './src/assets/images/features/medical.png',
+  sport: './src/assets/images/features/sport.png',
+  traffic: './src/assets/images/features/traffic.png'
+}
 
 const addGeoJsonLayer = (map, url, sourceId, layerId) => {
-  map.addSource(sourceId, {
-    type: 'geojson',
-    data: url
-  })
-  map.addLayer({
-    id: layerId,
-    type: 'circle',
-    source: sourceId,
-    paint: {
-      // make circles larger as the user zooms from z12 to z22
-      'circle-radius': {
-        type: 'exponential',
-        base: 2,
-        stops: [
-          [7, 8],
-          [16, 8]
-        ]
-      },
-      'circle-color': '#627BC1',
-      'circle-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0.5, 1]
-    }
-  })
+  let img = new Image()
+  img.src = imageUrl[sourceId]
+  img.onload = () => {
+    createImageBitmap(img).then((ImageBitmap) => {
+      let image = ImageBitmap
+      console.log(image)
+      // Add the image to the map style.
+      map.addImage(sourceId, image)
+      map.addSource(sourceId, {
+        type: 'geojson',
+        data: url
+      })
+      map.addLayer({
+        id: layerId,
+        type: 'symbol',
+        source: sourceId,
+        layout: {
+          'icon-image': sourceId,
+          'icon-size': 0.15
+          // // make circles larger as the user zooms from z12 to z22
+          // 'circle-radius': {
+          //   type: 'exponential',
+          //   base: 2,
+          //   stops: [
+          //     [7, 8],
+          //     [16, 8]
+          //   ]
+          // },
+          // 'circle-color': '#627BC1',
+          // 'circle-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0.5, 1]
+        }
+      })
+    })
+  }
 }
 
 const changePage = (page) => {

@@ -114,7 +114,7 @@
 
 <script setup>
 import { reactive, toRefs } from 'vue'
-
+const emits = defineEmits(['rmLeave'])
 const data = reactive({
   currentSelectItem: 'ALL',
   selectItem: [{ type: 'ALL' }, { type: 'ADMIN' }, { type: 'USER' }, { type: 'ROOT' }],
@@ -179,6 +179,9 @@ const data = reactive({
   pageTotal: 500,
   currentPage: 1
 })
+const closePop = () => {
+  emits('rmLeave', 'rmShow')
+}
 </script>
 
 <style scoped>
@@ -200,7 +203,8 @@ const data = reactive({
   justify-content: center;
   /* margin-top: 1rem; */
 }
-.rmtable-rows {
+:deep(.rmtable-rows) {
   line-height: 2rem;
+  color: black !important;
 }
 </style>

@@ -251,7 +251,9 @@ const handleRowAdd = () => {
   justify-content: center;
   /* margin-top: 1rem; */
 }
-.dmtable-rows {
+:deep(.dmtable-rows) {
   line-height: 2rem;
+  color: black !important;
+  /* font-weight: bold !important; */
 }
 </style>
