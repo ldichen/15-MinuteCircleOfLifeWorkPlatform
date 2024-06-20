@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@mapbox/mapbox-gl-draw": "^1.4.3",
+    "axios": "^1.7.2",
     "echarts": "^5.5.0",
     "element-plus": "^2.6.3",
     "gsap": "^3.12.5",

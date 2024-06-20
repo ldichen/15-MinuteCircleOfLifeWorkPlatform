@@ -28,7 +28,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm">
-            <span v-if="!loading">登 录</span>
+            <span v-if="!data.loading">登 录</span>
             <span v-else>登 录 中 ...</span>
           </el-button>
         </el-form-item>
@@ -49,7 +49,7 @@ import store from '@/store'
 
 const data = reactive({
   form: {
-    username: 'admin',
+    username: 'root',
     password: '123456'
   },
   rules: {

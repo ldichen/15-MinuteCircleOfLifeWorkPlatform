@@ -4,6 +4,8 @@
     test
   </button> -->
   <div id="mapDiv"></div>
+  <div class="left-fade"></div>
+  <div class="right-fade"></div>
   <div class="aside" id="aside">
     <el-menu>
       <el-menu-item index="1" @click="onCapture"
@@ -18,7 +20,7 @@
         </div>
         <span>数据审核</span></el-menu-item
       >
-      <el-menu-item
+      <el-menu-item @click="Pop('ocShow')"
         ><div class="aside-img-svg">
           <img src="@/assets/images/calculate.svg" alt="" style="width: 1.6rem" />
         </div>
@@ -48,6 +50,7 @@
   </div>
   <!-- <div class="mapModal" v-if="data.editControl.isEdit"></div> -->
   <div>
+    <onComputing v-if="data.shows.ocShow" @ocLeave="Leave" :map="map"></onComputing>
     <dataCapture v-if="data.shows.dcShow" @dcLeave="Leave"></dataCapture>
     <dataReview v-if="data.shows.drShow" @drLeave="Leave"></dataReview>
     <dataManagerment v-if="data.shows.dmShow" @dmLeave="Leave"></dataManagerment>
@@ -61,12 +64,12 @@
     size="large"
     >退出编辑</el-button
   >
-  <transition name="fade">
+  <!-- <transition name="fade">
     <div id="UpScores" class="up-scores" v-if="data.shows.csShow"><comScores></comScores></div>
   </transition>
   <div id="rightContainer" class="right-container">
     <dataStatistic></dataStatistic>
-  </div>
+  </div> -->
   <Teleport v-if="data.editControl.isEdit" to="#editPopUp">
     <editPopForm
       @popCancel="onCancel"
@@ -92,8 +95,12 @@ import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import Header from '@/components/header.vue'
 import tiandilayers from '@/layers/layers'
 import geoJsonDataUrl from '@/geoJson/index.js'
+
+// left-container
+import onComputing from '@/views/modulesLeft/onComputing.vue'
 import dataStatistic from '@/views/modulesRight/dataStatistic.vue'
 import comScores from '@/views/modulesRight/comScores.vue'
+// mid-container
 import dataManagerment from '@/views/modulesMid/dataManagerment.vue'
 import dataReview from '@/views/modulesMid/dataReview.vue'
 import PositionHelper from '@/utils/PositionHelper.js'
@@ -105,6 +112,7 @@ import { requiredNumber } from 'element-plus/es/components/table-v2/src/common'
 
 const data = reactive({
   shows: {
+    ocShow: false,
     dmShow: false,
     drShow: false,
     rmShow: false,
@@ -132,11 +140,11 @@ var draw = new MapboxDraw({
     trash: true
   }
 })
-var map = null
+var map = ref(null)
 const onLoad = () => {
   mapboxgl.accessToken =
     'pk.eyJ1Ijoid3lqcSIsImEiOiJjbDBnZDdwajUxMXRzM2htdWxubDh1MzJrIn0.2e2_rdU2nOUvtwltBIZtZg'
-  map = new mapboxgl.Map({
+  map.value = new mapboxgl.Map({
     container: 'mapDiv',
     center: [121.397428, 31.15923], // 设置地图中心点坐标（例如：北京）
     zoom: 9.5, // 设置初始缩放级别,
@@ -146,22 +154,22 @@ const onLoad = () => {
       layers: [] //121.397428, 31.13923
     }
   })
-  map.on('load', () => {
+  map.value.on('load', () => {
     tiandilayers.forEach((item) => {
-      addRasterTileLayer(map, item.url, item.id, item.id)
+      addRasterTileLayer(map.value, item.url, item.id, item.id)
     })
     onReloadGeoJson()
-    map.on('styleimagemissing', (e) => {
+    map.value.on('styleimagemissing', (e) => {
       console.log('styleimagemissing')
     })
 
     //配置鼠标悬停移动事件
     onMouseMap()
     //设置点击事件，触发弹框
-    map.on('click', data.geoLayers, handleClickPopUp)
+    map.value.on('click', data.geoLayers, handleClickPopUp)
 
     // 监听绘制完成事件
-    map.on('draw.create', handleCreateEdit)
+    map.value.on('draw.create', handleCreateEdit)
   })
 }
 
@@ -173,15 +181,18 @@ const onLoad = () => {
 //鼠标悬停、移除事件
 const onMouseMap = () => {
   //鼠标悬停事件
-  map.on('mousemove', data.geoLayers, (e) => {
-    map.getCanvas().style.cursor = 'pointer'
-    let features = map.queryRenderedFeatures(e.point)
+  map.value.on('mousemove', data.geoLayers, (e) => {
+    map.value.getCanvas().style.cursor = 'pointer'
+    let features = map.value.queryRenderedFeatures(e.point)
     if (features.length > 0) {
       let feature = features[0]
       if (data.hoveredStateId) {
         // setFeatureState 和 setFilter 是两种不同的写法(都可以)
         // hover时给该区域填充颜色
-        map.setFeatureState({ source: feature.layer.id, id: data.hoveredStateId }, { hover: false })
+        map.value.setFeatureState(
+          { source: feature.layer.id, id: data.hoveredStateId },
+          { hover: false }
+        )
         // hover时出现区域边界线
         // map.setFilter('state-borders', [
         //   '==',
@@ -190,12 +201,15 @@ const onMouseMap = () => {
         // ]) /* 通过设置filter更新要显示的数据，即出现鼠标悬停之后的变色效果 */
       }
       data.hoveredStateId = feature.id // ps:加载的geoJson  feature 里面必须设定一个id 属性,用于定位哪个区域需要高亮。如果原文件没有，可以手动在原文件上添加id 属性并设置对应的id 数字
-      map.setFeatureState({ source: feature.layer.id, id: data.hoveredStateId }, { hover: true })
+      map.value.setFeatureState(
+        { source: feature.layer.id, id: data.hoveredStateId },
+        { hover: true }
+      )
     }
   })
   //鼠标移除事件
-  map.on('mouseleave', data.geoLayers, (e) => {
-    map.getCanvas().style.cursor = ''
+  map.value.on('mouseleave', data.geoLayers, (e) => {
+    map.value.getCanvas().style.cursor = ''
   })
 }
 
@@ -213,17 +227,17 @@ const submitPopUp = new mapboxgl.Popup({
 
 //数据采集
 const onCapture = () => {
-  map.addControl(draw, 'bottom-right')
+  map.value.addControl(draw, 'bottom-right')
   reLoadauditsData('all')
   editEnter()
   changePage('edit')
   data.editShow = true
   // 监听 Draw 控件的 selectionchange 事件
-  map.on('draw.selectionchange', onEditStateChange)
+  map.value.on('draw.selectionchange', onEditStateChange)
   //关闭弹窗事件
-  map.off('click', data.geoLayers, handleClickPopUp)
+  map.value.off('click', data.geoLayers, handleClickPopUp)
   //关闭地图选中事件
-  map.on('click', onEditState)
+  map.value.on('click', onEditState)
 }
 //重载审批数据
 const reLoadauditsData = (type) => {
@@ -244,14 +258,14 @@ const onLeaveEdit = () => {
   data.editShow = false
   resetEditState()
   editLeave('edit')
-  map.on('click', data.geoLayers, handleClickPopUp)
-  map.off('click', onEditState)
-  map.removeControl(draw, 'bottom-right')
+  map.value.on('click', data.geoLayers, handleClickPopUp)
+  map.value.off('click', onEditState)
+  map.value.removeControl(draw, 'bottom-right')
 }
 
 //点击要素弹框事件
 const handleClickPopUp = (e) => {
-  let features = map.queryRenderedFeatures(e.point)
+  let features = map.value.queryRenderedFeatures(e.point)
   if (features.length > 0) {
     // 获取点击到的第一个要素
     let feature = features[0]
@@ -277,7 +291,7 @@ const handleClickPopUp = (e) => {
       '</p>' +
       '</div>'
     // 创建弹框并设置位置
-    detailPopUp.setLngLat(e.lngLat).setHTML(popupContent).addTo(map)
+    detailPopUp.setLngLat(e.lngLat).setHTML(popupContent).addTo(map.value)
   }
 }
 
@@ -330,12 +344,12 @@ const EditPopFormMount = (lngLat, state) => {
     console.log('挂载编辑弹窗')
     //第一次绘制要素
     let popupContent = '<div id="editPopUp"></div>'
-    submitPopUp.setLngLat(lngLat).setHTML(popupContent).addTo(map)
+    submitPopUp.setLngLat(lngLat).setHTML(popupContent).addTo(map.value)
   } else if (state == 1) {
     console.log('挂载信息弹窗')
     //点击查看已提交内容
     let popupContent = '<div id="editPopUp"></div>'
-    submitPopUp.setLngLat(lngLat).setHTML(popupContent).addTo(map)
+    submitPopUp.setLngLat(lngLat).setHTML(popupContent).addTo(map.value)
   }
 }
 
@@ -362,7 +376,7 @@ const handleCreateEdit = (e) => {
   data.editInfo.state = 0
   data.editInfo.editTime = beijingTime
   //监听地图点击事件，保持该要素选中状态
-  map.on('click', onEditState)
+  map.value.on('click', onEditState)
   //关闭弹窗事件
   submitPopUp.on('close', onEditClosePop)
 }
@@ -384,7 +398,7 @@ const resetEditState = () => {
   data.editControl.selectedIds = []
   data.editControl.isSave = false
   data.editInfo = {}
-  map.off('click', onEditState)
+  map.value.off('click', onEditState)
   submitPopUp.off('close', onEditClosePop)
   console.log('resetEditState')
 }
@@ -409,13 +423,13 @@ const onCaptureSubmit = () => {
 //重新载入geojson数据
 const onReloadGeoJson = () => {
   geoJsonDataUrl.forEach((item) => {
-    if (map.getLayer(item.name)) {
-      map.removeLayer(item.name)
+    if (map.value.getLayer(item.name)) {
+      map.value.removeLayer(item.name)
     }
   })
 
   geoJsonDataUrl.forEach((item) => {
-    addGeoJsonLayer(map, item.url, item.name, item.name)
+    addGeoJsonLayer(map.value, item.url, item.name, item.name)
     data.geoLayers.push(item.name)
   })
 }
@@ -447,8 +461,7 @@ const addGeoJsonLayer = (map, url, sourceId, layerId) => {
   img.onload = () => {
     createImageBitmap(img).then((ImageBitmap) => {
       let image = ImageBitmap
-      console.log(image)
-      // Add the image to the map style.
+      // Add the image to the map.value style.
       map.addImage(sourceId, image)
       map.addSource(sourceId, {
         type: 'geojson',
@@ -478,6 +491,11 @@ const addGeoJsonLayer = (map, url, sourceId, layerId) => {
   }
 }
 
+/**
+ * @description:页面切换
+ * @param {string} page
+ * @return {*}
+ */
 const changePage = (page) => {
   if (page) {
     for (let val in data.shows) {
@@ -485,6 +503,11 @@ const changePage = (page) => {
         data.shows[val] = false
       } else {
         data.shows[val] = true
+        if (val == 'ocShow') {
+          Enter(1)
+        } else {
+          Enter(2)
+        }
       }
     }
   }
@@ -503,30 +526,60 @@ const editLeave = (type) => {
   PositionHelper.enterLeftActions(asideIds, 0)
   PositionHelper.enterRightActions(RightIds, 0)
 }
-
-const Enter = () => {
-  const RightIds = ['rightContainer']
-  PositionHelper.leaveRightActions(RightIds, 0)
+/**
+ * @description: 页面切换，子页面进入，清除主页内容
+ * @param {Number} type
+ * @return {*}
+ */
+const Enter = (type) => {
+  if (type == 1) {
+    const RightIds = ['rightContainer']
+    const asideIds = ['aside']
+    PositionHelper.leaveRightActions(RightIds, 0)
+    PositionHelper.leaveLeftActions(asideIds, 0)
+  } else if (type == 2) {
+    const RightIds = ['rightContainer']
+    PositionHelper.leaveRightActions(RightIds, 0)
+  }
 }
+/**
+ * @description: 页面切换，子页面离开，恢复主页内容
+ * @param {Number} type
+ * @return {*}
+ */
 const Leave = (type) => {
   data.shows[type] = false
   const RightIds = ['rightContainer']
   PositionHelper.enterRightActions(RightIds, 0)
 }
-
+/**
+ * @description:子页面弹出
+ * @param {string} page
+ * @return {*}
+ */
 const Pop = (page) => {
   if (!data.shows[page]) {
     changePage(page)
-    Enter()
   }
 }
+
+///////////////////////////////////////在线计算///////////////////////////////
+// const onComputePage = ()=>{
+//   const marker = new mapboxgl.Marker({
+//         draggable: true
+//     })
+//         .setLngLat([0, 0])
+//         .addTo(map);
+// }
 </script>
 
 <style scoped>
 @import '@/assets/workPlatform.css';
 #mapDiv {
+  position: absolute;
+  top: 4rem;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 4rem);
 }
 .el-header {
   --el-header-padding: none;
@@ -534,20 +587,19 @@ const Pop = (page) => {
 }
 .aside {
   position: absolute;
-  top: 8rem;
-  left: 0.3rem;
-  height: calc(100% - 16rem);
-  width: 5rem;
-  background-color: rgba(255, 255, 255, 0.6);
-  border-radius: 6px 6px 6px 6px;
-  border: 1px solid #1e8df9;
+  top: 4rem;
+  left: 0rem;
+  height: calc(100% - 4rem);
+  width: 6rem;
+  /* background-color: rgba(255, 255, 255, 0.6); */
+  /* border-radius: 6px 6px 6px 6px; */
+  /* border: 1px solid #1e8df9; */
 }
 .aside .el-menu {
   /* height: 50%; */
   display: flex;
   flex-direction: column;
   /* justify-content: space-around; */
-
   border-right: none;
   background-color: rgba(29, 48, 67, 0);
   /* height: 30rem; */

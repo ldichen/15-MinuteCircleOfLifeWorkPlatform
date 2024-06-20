@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import vuex from 'vuex'
+import axios from 'axios'
 import './assets/main.css'
 import Element from 'element-plus'
 import 'element-plus/dist/index.css'
@@ -21,6 +22,7 @@ app.component('echarts', echarts)
 
 app.use(router)
 app.use(vuex)
+app.use(axios)
 app.use(mapboxgl)
 app.use($)
 app.use(gsap)
