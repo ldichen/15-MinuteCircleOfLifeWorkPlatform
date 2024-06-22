@@ -79,6 +79,14 @@
   right: 0.5rem;
   height: 30%;
 }
+.layer-control {
+  position: absolute;
+  z-index: 5;
+  top: 5rem;
+  right: 1rem;
+
+  /* border-left: unset; */
+}
 .compute-container {
 }
 .left-fade {

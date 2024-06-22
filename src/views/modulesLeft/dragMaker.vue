@@ -2,7 +2,7 @@
  * @Author: DiChen
  * @Date: 2024-06-20 10:40:28
  * @LastEditors: DiChen
- * @LastEditTime: 2024-06-20 19:09:37
+ * @LastEditTime: 2024-06-21 14:24:50
 -->
 <template>
   <div class="lonlat-container">
@@ -66,14 +66,24 @@ const data = reactive({
 onMounted(() => {
   onLoad()
 })
+
+// const propsStatus = onComputed(() => {
+//   if()
+// })
 const onLoad = () => {
+  //经纬度输入框的变化监听，变化则发送给父组件
   watch([() => data.form.lon, () => data.form.lat], (newValue) => {
+    // if (data.form.lon != props.lngLat[0] || data.form.lat != props.lngLat[1]) {
     emits('setMarkerLngLat', data.form, data.radio)
+    // }
   })
-  watch(props.lngLat, (newValue, oldValue) => {
+  //父组件marker经纬度传递变化监听，变化则更新输入框
+  watch([() => props.lngLat[0], () => props.lngLat[1]], (newValue, oldValue) => {
+    // if (data.form.lon != props.lngLat[0] || data.form.lat != props.lngLat[1]) {
     data.form.lon = Number(newValue[0])
     data.form.lat = Number(newValue[1])
-    console.log(data.form)
+    // emits('setMarkerLngLat', data.form, data.radio)
+    // }
   })
 }
 </script>

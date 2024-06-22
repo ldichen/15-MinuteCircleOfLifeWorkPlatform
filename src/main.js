@@ -21,14 +21,14 @@ const app = createApp(App)
 app.component('echarts', echarts)
 
 app.use(router)
-app.use(vuex)
+// app.use(vuex)
 app.use(axios)
-app.use(mapboxgl)
+// app.use(mapboxgl)
 app.use($)
 app.use(gsap)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 app.use(Element)
-app.use(echarts)
+// app.use(echarts)
 app.mount('#app')

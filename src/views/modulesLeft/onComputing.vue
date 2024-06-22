@@ -2,7 +2,7 @@
  * @Author: DiChen
  * @Date: 2024-06-19 19:51:30
  * @LastEditors: DiChen
- * @LastEditTime: 2024-06-20 21:49:36
+ * @LastEditTime: 2024-06-21 17:20:33
 -->
 
 <template>
@@ -17,6 +17,7 @@
           font-size: 1.5rem;
           font-weight: bold;
         "
+        @click="close"
       >
         <el-icon style="vertical-align: middle" :size="30"><DArrowLeft /></el-icon>
       </button>
@@ -53,11 +54,16 @@ import { queryPoint } from '@/api/data'
 //store
 import store from '@/store'
 const loading = ref(null)
+const emits = defineEmits(['ocLeave'])
 const props = defineProps(['map'])
 const data = reactive({
   radio: 'dragMarker',
+  //映射到dragMarker
   lngLat: [121.397428, 31.15923],
+  //接收输入框的经纬度
+  inputLngLat: [121.397428, 31.15923],
   profile: null,
+
   pointGeoJsonData: [],
   conGeoJsonData: []
 })
@@ -70,7 +76,9 @@ onUnmounted(() => {
   data.profile = null
   data.radio = 'dragMarker'
   data.lngLat = [121.397428, 31.15923]
+  data.profile = null
   marker.remove()
+  console.log('onComputing unmounted')
 })
 var marker = new mapboxgl.Marker({
   draggable: true
@@ -89,57 +97,56 @@ const onLoad = () => {
     },
     { immediate: true }
   )
-  watch(
-    [() => data.lngLat[0], () => data.lngLat[1]],
-    async (newValue) => {
-      console.log('test')
-      try {
-        loading.value = ElLoading.service({
-          target: '#mapDiv',
-          lock: false,
-          text: 'Loading',
-          background: 'rgba(0, 0, 0, 0.7)'
-        })
-        if (data.profile != null) {
-          let p = {
-            lon: data.lngLat[0],
-            lat: data.lngLat[1],
-            profile: data.profile
-          }
-          loading.value.lock = true
-          await queryPoint(p).then((res) => {
-            res.data.name = res.time.match(/\d/g).slice(0, 14).join('')
-            store.commit('setLayersInfo', res.data)
-            addGeoJsonLayer(
-              props.map,
-              res.data,
-              res.data.name,
-              res.data.name,
-              res.data.features[0].properties
-            )
-          })
+  //只对输入框负责
+  watch([() => data.inputLngLat[0], () => data.inputLngLat[1]], async (newValue) => {
+    try {
+      loading.value = ElLoading.service({
+        target: '#mapDiv',
+        lock: false,
+        text: 'Loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
+      if (data.profile != null) {
+        let p = {
+          lon: data.inputLngLat[0],
+          lat: data.inputLngLat[1],
+          profile: data.profile
         }
-      } catch (err) {
-        console.log(err)
-      } finally {
-        loading.value.close()
+        marker.remove()
+        marker.setLngLat([data.inputLngLat[0], data.inputLngLat[1]]).addTo(props.map)
+        await queryPoint(p).then((res) => {
+          res.data.name = res.time.match(/\d/g).slice(0, 14).join('')
+          res.data.mode = data.profile
+          res.data.isShow = true
+          store.commit('setLayersInfo', res.data)
+          addGeoJsonLayer(
+            props.map,
+            res.data,
+            res.data.name,
+            res.data.name,
+            res.data.features[0].properties
+          )
+        })
       }
-    },
-    { once: true }
-  )
+    } catch (err) {
+      console.log(err)
+    } finally {
+      loading.value.close()
+    }
+  })
   marker.on('dragend', onDragEnd)
 }
 /**
- * @description: 移动marker结束事件
+ * @description: 移动marker结束事件，
  * @return {*}
  */
 const onDragEnd = () => {
   const lngLat = marker.getLngLat()
-  data.lngLat[0] = lngLat.lng.toFixed(7)
-  data.lngLat[1] = lngLat.lat.toFixed(7)
+  data.lngLat[0] = Number(lngLat.lng.toFixed(7))
+  data.lngLat[1] = Number(lngLat.lat.toFixed(7))
 }
 /**
- * @description: 输入框改变，marker也改变dang
+ * @description: 输入框改变，marker也改变
  * @param {object} lngLat
  * @param {Number} lngLat.lon 经度
  * @param {Number} lngLat.lat 纬度
@@ -147,9 +154,9 @@ const onDragEnd = () => {
  * @return {*}
  */
 const setMarkerLngLat = (lngLat, profile) => {
-  data.lngLat[0] = lngLat.lon
-  data.lngLat[1] = lngLat.lat
   data.profile = profile
+  data.inputLngLat[0] = lngLat.lon
+  data.inputLngLat[1] = lngLat.lat
 }
 
 const onReloadLayers = () => {
@@ -167,7 +174,6 @@ const onReloadLayers = () => {
  * @return {*}
  */
 const addGeoJsonLayer = (map, data, sourceId, layerId, properties) => {
-  console.log('properties', properties)
   map.addSource(sourceId, {
     type: 'geojson',
     data: data
@@ -180,6 +186,10 @@ const addGeoJsonLayer = (map, data, sourceId, layerId, properties) => {
     paint: {
       'fill-color': properties['color'],
       'fill-opacity': properties['fill-opacity']
+    },
+    metadata: {
+      mode: data.mode,
+      isShow: data.isShow
     }
   })
   map.addLayer({
@@ -193,13 +203,10 @@ const addGeoJsonLayer = (map, data, sourceId, layerId, properties) => {
     }
   })
 }
-// const radioChange = () => {
-//   if (data.radio == 'dragMarker') {
-//     console.log('dragMarker')
-//   } else if (data.radio == 'community') {
-//     console.log('community')
-//   }
-// }
+//关闭该组件
+const close = () => {
+  emits('ocLeave', 'ocShow')
+}
 </script>
 
 <style scoped>

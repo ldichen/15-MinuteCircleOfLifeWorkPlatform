@@ -1,8 +1,8 @@
 /*
  * @Author: DiChen
- * @Date: 2024-06-20 19:29:46
+ * @Date: 2024-06-22 14:38:39
  * @LastEditors: DiChen
- * @LastEditTime: 2024-06-22 15:09:43
+ * @LastEditTime: 2024-06-22 14:53:39
  */
 export default {
   state: {
@@ -10,19 +10,15 @@ export default {
     treeDatalist: []
   },
   mutations: {
-    setLayersInfo(state, LayersInfo) {
-      if (!Array.isArray(LayersInfo)) {
-        state.dataList.push(LayersInfo)
-      } else {
-        LayersInfo.forEach((item) => {
-          state.dataList.push(item)
-        })
-      }
+    //tmp图层
+    setLayersInfo(state, comListInfo) {
+      comListInfo.forEach((item) => {
+        state.dataList.push(item)
+      })
     },
-    cleanLayersInfoInfo(state) {
+    cleanLayersInfo(state) {
       state.dataList.length = 0
     },
-
     // treeDatalist
     setTreeDatalist(state, treeData) {
       state.treeDatalist.push(treeData)

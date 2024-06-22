@@ -14,33 +14,32 @@
         </div>
         <span>数据采集</span></el-menu-item
       >
-      <el-menu-item @click="Pop('drShow')"
+      <el-menu-item index="2" @click="Pop('drShow')"
         ><div class="aside-img-svg">
           <img src="@/assets/images/dataReview.svg" alt="" style="width: 1.6rem" />
         </div>
         <span>数据审核</span></el-menu-item
       >
-      <el-menu-item @click="Pop('ocShow')"
+      <el-menu-item index="3" @click="Pop('ocShow')"
         ><div class="aside-img-svg">
           <img src="@/assets/images/calculate.svg" alt="" style="width: 1.6rem" />
         </div>
         <span>在线计算</span></el-menu-item
       >
-      <el-menu-item
+      <el-menu-item index="4"
         ><div class="aside-img-svg">
           <img src="@/assets/images/moduleImport.svg" alt="" style="width: 1.6rem" />
         </div>
         <span>模块导入</span></el-menu-item
       >
-      <el-menu-item @click="Pop('dmShow')"
+      <el-menu-item index="5" @click="Pop('dmShow')"
         ><div class="aside-img-svg">
           <img src="@/assets/images/dataManagerment.svg" alt="" style="width: 2rem" />
         </div>
         <span>数据管理</span></el-menu-item
       >
-      <el-menu-item
-        @click="Pop('rmShow')"
-        v-if="store.state.userInfo.dataList[0].username == 'root'"
+      <!-- v-if="store.state.userInfo.dataList[0].username == 'root'" -->
+      <el-menu-item @click="Pop('rmShow')"
         ><div class="aside-img-svg">
           <img src="@/assets/images/rightsManagement.svg" alt="" style="width: 2rem" />
         </div>
@@ -48,6 +47,8 @@
       >
     </el-menu>
   </div>
+
+  <layerController :map="map"></layerController>
   <!-- <div class="mapModal" v-if="data.editControl.isEdit"></div> -->
   <div>
     <onComputing v-if="data.shows.ocShow" @ocLeave="Leave" :map="map"></onComputing>
@@ -107,6 +108,8 @@ import PositionHelper from '@/utils/PositionHelper.js'
 import dataCapture from '@/views/modulesMid/dataCapture.vue'
 import rightsManagement from '@/views/modulesMid/rightsManagement.vue'
 import editPopForm from '@/views/editPopForm.vue'
+//layerController
+import layerController from '@/views/mainPages/layerController.vue'
 import store from '@/store'
 import { requiredNumber } from 'element-plus/es/components/table-v2/src/common'
 
@@ -544,13 +547,21 @@ const Enter = (type) => {
 }
 /**
  * @description: 页面切换，子页面离开，恢复主页内容
- * @param {Number} type
+ * @param {string} type
  * @return {*}
  */
 const Leave = (type) => {
+  console.log('leave', type)
   data.shows[type] = false
-  const RightIds = ['rightContainer']
-  PositionHelper.enterRightActions(RightIds, 0)
+  if (type == 'ocShow') {
+    const RightIds = ['rightContainer']
+    const asideIds = ['aside']
+    PositionHelper.enterRightActions(RightIds, 0)
+    PositionHelper.enterLeftActions(asideIds, 0)
+  } else {
+    const RightIds = ['rightContainer']
+    PositionHelper.enterRightActions(RightIds, 0)
+  }
 }
 /**
  * @description:子页面弹出
