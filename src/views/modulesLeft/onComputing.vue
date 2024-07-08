@@ -2,7 +2,7 @@
  * @Author: DiChen
  * @Date: 2024-06-19 19:51:30
  * @LastEditors: DiChen
- * @LastEditTime: 2024-06-21 17:20:33
+ * @LastEditTime: 2024-07-04 10:36:31
 -->
 
 <template>
@@ -36,6 +36,9 @@
       ></dragMarker>
       <community v-if="data.radio == 'community'"></community>
     </div>
+    <div class="compute-scores">
+      <comScores></comScores>
+    </div>
   </div>
 </template>
 <script setup>
@@ -44,6 +47,8 @@ import { ElLoading } from 'element-plus'
 //不同计算模式下的页面
 import dragMarker from './dragMaker.vue'
 import community from './community.vue'
+//comScores
+import comScores from '@/views/modulesRight/comScores.vue'
 //mapboxgl
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
@@ -53,9 +58,13 @@ import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import { queryPoint } from '@/api/data'
 //store
 import store from '@/store'
+//IMG
+import POIImageUrl from '@/assets/images/features/POIIndex.js'
+
 const loading = ref(null)
 const emits = defineEmits(['ocLeave'])
 const props = defineProps(['map'])
+var imgArr = []
 const data = reactive({
   radio: 'dragMarker',
   //映射到dragMarker
@@ -85,6 +94,21 @@ var marker = new mapboxgl.Marker({
 }).setLngLat([121.397428, 31.15923])
 
 const onLoad = () => {
+  let arr = ['宜学', '宜游', '宜居', '宜养', '宜业']
+  console.log('arr', arr)
+  //添加点
+  for (let i = 0; i < arr.length; i++) {
+    console.log('i', i)
+    const img = new Image()
+    img.src = POIImageUrl[arr[i]]
+    console.log('img.src', POIImageUrl[arr[i]])
+    img.onload = () => {
+      createImageBitmap(img).then((ImageBitmap) => {
+        imgArr.push(ImageBitmap)
+        props.map.addImage(arr[i], ImageBitmap)
+      })
+    }
+  }
   watch(
     () => data.radio,
     (radio) => {
@@ -115,17 +139,12 @@ const onLoad = () => {
         marker.remove()
         marker.setLngLat([data.inputLngLat[0], data.inputLngLat[1]]).addTo(props.map)
         await queryPoint(p).then((res) => {
+          console.log('res', res)
           res.data.name = res.time.match(/\d/g).slice(0, 14).join('')
           res.data.mode = data.profile
           res.data.isShow = true
           store.commit('setLayersInfo', res.data)
-          addGeoJsonLayer(
-            props.map,
-            res.data,
-            res.data.name,
-            res.data.name,
-            res.data.features[0].properties
-          )
+          addGeoJsonLayer(props.map, res.data)
         })
       }
     } catch (err) {
@@ -173,10 +192,19 @@ const onReloadLayers = () => {
  * @param {object} properties
  * @return {*}
  */
-const addGeoJsonLayer = (map, data, sourceId, layerId, properties) => {
+//  res.data.name,
+//             res.data.name,
+//             res.data.features[0].properties
+const addGeoJsonLayer = (map, data) => {
+  let sourceId = data.name
+  let layerId = data.name
+  let urlSourceId = 'url' + sourceId
+  let urlLayerId = 'url' + layerId
+  let properties = data.polygon.features[0].properties
+
   map.addSource(sourceId, {
     type: 'geojson',
-    data: data
+    data: data.polygon
   })
   map.addLayer({
     id: 'fiil' + sourceId,
@@ -202,6 +230,38 @@ const addGeoJsonLayer = (map, data, sourceId, layerId, properties) => {
       'line-width': 3
     }
   })
+  // Add the image to the map.value style.
+
+  map.addSource(urlSourceId, {
+    type: 'geojson',
+    data: data.pois
+  })
+  console.log('data.pois', data.pois)
+  map.addLayer({
+    id: urlLayerId,
+    type: 'symbol',
+    source: urlSourceId,
+    layout: {
+      'icon-image': [
+        'match',
+        ['get', 'type'], // 属性名，根据此属性决定图标
+        '宜学',
+        '宜学', // 当属性值为 'value1' 时使用 'icon-image-1'
+        '宜游',
+        '宜游', // 当属性值为 'value2' 时使用 'icon-image-2'
+        '宜居',
+        '宜居', // 当属性值为 'value2' 时使用 'icon-image-2'
+        '宜养',
+        '宜养',
+        '宜业',
+        '宜业',
+        '宜业'
+        // '宜居' // 当属性值为 'value2' 时使用 'icon-image-2'
+        // 'default-icon-image' // 默认图标，当属性值不匹配时使用此图标
+      ],
+      'icon-size': 0.15
+    }
+  })
 }
 //关闭该组件
 const close = () => {
@@ -225,8 +285,19 @@ const close = () => {
   /* justify-content: center; */
   align-items: center;
   /* height: calc(100%-6rem); */
-  height: calc(100% - 5rem);
+  height: 25rem;
   /* background-color: #409eff; */
+}
+.compute-scores {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  /* justify-content: center; */
+  align-items: center;
+  /* height: calc(100%-6rem); */
+  /* margin-bottom: 10rem; */
+  height: 25rem;
+  /* background-color: aqua; */
 }
 .el-radio-group {
   border: 1px solid #909399 !important;

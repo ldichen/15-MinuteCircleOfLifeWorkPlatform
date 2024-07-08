@@ -290,13 +290,13 @@ export function getOption(refName, data) {
     return {
       radar: {
         indicator: [
-          { name: '日常生活', max: 100 },
-          { name: '文体娱乐', max: 100 },
-          { name: '公共空间', max: 100 },
-          { name: '教育服务', max: 100 },
-          { name: '医疗护理', max: 100 },
-          { name: '长者照料', max: 100 },
-          { name: '社区安全', max: 100 }
+          { name: '宜业', max: 100 },
+          { name: '宜游', max: 100 },
+          { name: '宜学', max: 100 },
+          { name: '宜居', max: 100 },
+          { name: '宜养', max: 100 }
+          // { name: '长者照料', max: 100 },
+          // { name: '社区安全', max: 100 }
         ],
         radius: 80,
         axisName: {

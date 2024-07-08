@@ -1,23 +1,27 @@
 <template>
-  <div class="title"><span>XX社区得分情况</span></div>
+  <div class="title"><span>评分情况</span></div>
   <div class="midright-chart">
     <div id="scoreChart" ref="chart"></div>
   </div>
 </template>
 
 <script setup>
-import { reactive, toRefs, ref, onMounted } from 'vue'
+import { reactive, toRefs, ref, watch, onMounted } from 'vue'
 import * as echarts from 'echarts'
+import store from '@/store'
 import { getOption } from '@/components/echarts/workplatformchart.js'
 const data = reactive({
   scoreType: [
-    { name: '日常生活', value: 90 },
-    { name: '文体娱乐', value: 20 },
-    { name: '公共空间', value: 30 },
-    { name: '教育服务', value: 40 },
-    { name: '医疗护理', value: 50 },
-    { name: '长者照料', value: 60 },
-    { name: '社区安全', value: 80 }
+    {
+      name: '宜业',
+      value: 0
+    },
+    { name: '宜居', value: 0 },
+    { name: '宜养', value: 0 },
+    { name: '宜学', value: 0 },
+    { name: '宜游', value: 0 }
+    // { name: '长者照料', value: 60 },
+    // { name: '社区安全', value: 80 }
   ]
 })
 let myrightTopChart = null
@@ -26,6 +30,12 @@ window.addEventListener('resize', () => {
 })
 // const chart = ref(null)
 onMounted(() => {
+  getList()
+})
+watch(store.state.mapLayersInfo.dataList, (newValue) => {
+  data.scoreType.forEach((item) => {
+    item.value = getRandomNumber()
+  })
   getList()
 })
 const getList = () => {
@@ -37,6 +47,11 @@ const getList = () => {
   let Option = getOption('scores', data.scoreType)
   myrightTopChart.clear()
   myrightTopChart.setOption(Option)
+}
+const getRandomNumber = () => {
+  const min = 30
+  const max = 99
+  return Math.floor(Math.random() * (max - min + 1)) + min
 }
 </script>
 

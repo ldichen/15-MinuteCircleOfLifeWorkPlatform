@@ -99,7 +99,7 @@ import geoJsonDataUrl from '@/geoJson/index.js'
 
 // left-container
 import onComputing from '@/views/modulesLeft/onComputing.vue'
-import dataStatistic from '@/views/modulesRight/dataStatistic.vue'
+// import dataStatistic from '@/views/modulesRight/dataStatistic.vue'
 import comScores from '@/views/modulesRight/comScores.vue'
 // mid-container
 import dataManagerment from '@/views/modulesMid/dataManagerment.vue'
@@ -431,10 +431,10 @@ const onReloadGeoJson = () => {
     }
   })
 
-  geoJsonDataUrl.forEach((item) => {
-    addGeoJsonLayer(map.value, item.url, item.name, item.name)
-    data.geoLayers.push(item.name)
-  })
+  // geoJsonDataUrl.forEach((item) => {
+  //   addGeoJsonLayer(map.value, item.url, item.name, item.name)
+  //   data.geoLayers.push(item.name)
+  // })
 }
 
 const addRasterTileLayer = (map, url, sourceId, layerId) => {
@@ -450,12 +450,12 @@ const addRasterTileLayer = (map, url, sourceId, layerId) => {
 }
 //图标地址
 const imageUrl = {
-  education: './src/assets/images/features/education.png',
-  joy: './src/assets/images/features/joy.png',
-  life: './src/assets/images/features/life.png',
-  medical: './src/assets/images/features/medical.png',
-  sport: './src/assets/images/features/sport.png',
-  traffic: './src/assets/images/features/traffic.png'
+  education: './src/assets/images/features/education.png', //学
+  joy: './src/assets/images/features/joy.png', //游
+  life: './src/assets/images/features/life.png', //居
+  medical: './src/assets/images/features/medical.png', //养
+  sport: './src/assets/images/features/sport.png', //
+  traffic: './src/assets/images/features/traffic.png' //业
 }
 
 const addGeoJsonLayer = (map, url, sourceId, layerId) => {
@@ -477,17 +477,6 @@ const addGeoJsonLayer = (map, url, sourceId, layerId) => {
         layout: {
           'icon-image': sourceId,
           'icon-size': 0.15
-          // // make circles larger as the user zooms from z12 to z22
-          // 'circle-radius': {
-          //   type: 'exponential',
-          //   base: 2,
-          //   stops: [
-          //     [7, 8],
-          //     [16, 8]
-          //   ]
-          // },
-          // 'circle-color': '#627BC1',
-          // 'circle-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0.5, 1]
         }
       })
     })
