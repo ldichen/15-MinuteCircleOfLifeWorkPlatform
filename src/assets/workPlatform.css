@@ -91,7 +91,7 @@
 }
 .left-fade {
   position: absolute;
-  top: 4rem;
+  /* top: rem; */
   left: 0rem;
   height: calc(100% - 4rem);
   width: 10rem;

@@ -5,7 +5,7 @@ import router from '../router' // 用于路径跳转
 // create axios instance
 const service = axios.create({
   // The public part of URL
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_BASE_URL,
   // baseURL: process.env.VUE_APP_BASE_API,//'/Model',
   timeout: 10000,
   headers: {

@@ -1,14 +1,13 @@
 <template>
-  <el-header><Header></Header></el-header>
-  <!-- <button style="position: absolute; top: 500; right: 500; z-index: 9999" @click="test">
-    test
-  </button> -->
-  <div id="mapDiv"></div>
-  <div class="left-fade"></div>
-  <div class="right-fade"></div>
-  <div class="aside" id="aside">
-    <el-menu>
-      <el-menu-item index="1" @click="onCapture"
+  <!-- <dv-full-screen-container> -->
+  <!-- <dv-border-box-11 title="15分钟生活圈工作平台" class="dv"> -->
+  <div class="main">
+    <div id="mapDiv"></div>
+    <div class="left-fade"></div>
+    <div class="right-fade"></div>
+    <div class="aside" id="aside">
+      <el-menu>
+        <!-- <el-menu-item index="1" @click="onCapture"
         ><div class="aside-img-svg">
           <img src="@/assets/images/dataCapture.svg" alt="" style="width: 2rem" />
         </div>
@@ -19,14 +18,14 @@
           <img src="@/assets/images/dataReview.svg" alt="" style="width: 1.6rem" />
         </div>
         <span>数据审核</span></el-menu-item
-      >
-      <el-menu-item index="3" @click="Pop('ocShow')"
-        ><div class="aside-img-svg">
-          <img src="@/assets/images/calculate.svg" alt="" style="width: 1.6rem" />
-        </div>
-        <span>在线计算</span></el-menu-item
-      >
-      <el-menu-item index="4"
+      > -->
+        <el-menu-item index="3" @click="Pop('ocShow')"
+          ><div class="aside-img-svg">
+            <img src="@/assets/images/calculate.svg" alt="" style="width: 1.6rem" />
+          </div>
+          <span>在线计算</span></el-menu-item
+        >
+        <!-- <el-menu-item index="4"
         ><div class="aside-img-svg">
           <img src="@/assets/images/moduleImport.svg" alt="" style="width: 1.6rem" />
         </div>
@@ -37,54 +36,57 @@
           <img src="@/assets/images/dataManagerment.svg" alt="" style="width: 2rem" />
         </div>
         <span>数据管理</span></el-menu-item
-      >
-      <!-- v-if="store.state.userInfo.dataList[0].username == 'root'" -->
-      <el-menu-item @click="Pop('rmShow')"
+      > -->
+        <!-- v-if="store.state.userInfo.dataList[0].username == 'root'" -->
+        <!-- <el-menu-item @click="Pop('rmShow')"
         ><div class="aside-img-svg">
           <img src="@/assets/images/rightsManagement.svg" alt="" style="width: 2rem" />
         </div>
         <span>权限管理</span></el-menu-item
-      >
-    </el-menu>
-  </div>
+      > -->
+      </el-menu>
+    </div>
 
-  <layerController :map="map"></layerController>
-  <!-- <div class="mapModal" v-if="data.editControl.isEdit"></div> -->
-  <div>
-    <onComputing v-if="data.shows.ocShow" @ocLeave="Leave" :map="map"></onComputing>
-    <dataCapture v-if="data.shows.dcShow" @dcLeave="Leave"></dataCapture>
-    <dataReview v-if="data.shows.drShow" @drLeave="Leave"></dataReview>
-    <dataManagerment v-if="data.shows.dmShow" @dmLeave="Leave"></dataManagerment>
-    <rightsManagement v-if="data.shows.rmShow" @rmLeave="Leave"></rightsManagement>
-  </div>
-  <el-button
-    class="leaveEditButton"
-    v-if="data.editShow"
-    @click="onLeaveEdit"
-    type="danger"
-    size="large"
-    >退出编辑</el-button
-  >
-  <!-- <transition name="fade">
+    <layerController :map="map"></layerController>
+    <!-- <div class="mapModal" v-if="data.editControl.isEdit"></div> -->
+    <div>
+      <onComputing v-if="data.shows.ocShow" @ocLeave="Leave" :map="map"></onComputing>
+      <!-- <dataCapture v-if="data.shows.dcShow" @dcLeave="Leave"></dataCapture> -->
+      <!-- <dataReview v-if="data.shows.drShow" @drLeave="Leave"></dataReview> -->
+      <!-- <dataManagerment v-if="data.shows.dmShow" @dmLeave="Leave"></dataManagerment> -->
+      <!-- <rightsManagement v-if="data.shows.rmShow" @rmLeave="Leave"></rightsManagement> -->
+    </div>
+    <el-button
+      class="leaveEditButton"
+      v-if="data.editShow"
+      @click="onLeaveEdit"
+      type="danger"
+      size="large"
+      >退出编辑</el-button
+    >
+    <!-- <transition name="fade">
     <div id="UpScores" class="up-scores" v-if="data.shows.csShow"><comScores></comScores></div>
   </transition>
   <div id="rightContainer" class="right-container">
     <dataStatistic></dataStatistic>
   </div> -->
-  <Teleport v-if="data.editControl.isEdit" to="#editPopUp">
-    <editPopForm
-      @popCancel="onCancel"
-      @popSubmit="onCaptureSubmit"
-      :editInfo="data.editInfo"
-    ></editPopForm>
-  </Teleport>
-  <Teleport v-if="data.isRead" to="#editPopUp">
-    <editPopForm
-      @popCancel="onCancel"
-      @popSubmit="onCaptureSubmit"
-      :editInfo="data.editInfo"
-    ></editPopForm>
-  </Teleport>
+    <Teleport v-if="data.editControl.isEdit" to="#editPopUp">
+      <editPopForm
+        @popCancel="onCancel"
+        @popSubmit="onCaptureSubmit"
+        :editInfo="data.editInfo"
+      ></editPopForm>
+    </Teleport>
+    <Teleport v-if="data.isRead" to="#editPopUp">
+      <editPopForm
+        @popCancel="onCancel"
+        @popSubmit="onCaptureSubmit"
+        :editInfo="data.editInfo"
+      ></editPopForm>
+    </Teleport>
+  </div>
+  <!-- </dv-border-box-11> -->
+  <!-- </dv-full-screen-container> -->
 </template>
 
 <script setup>
@@ -575,11 +577,27 @@ const Pop = (page) => {
 
 <style scoped>
 @import '@/assets/workPlatform.css';
+.dv-border-box-11 {
+  /* background-color: #1e8df9; */
+}
+.main {
+  position: relative;
+  top: 3rem;
+  /* display: flex;
+  justify-content: center; */
+  height: calc(100% - 4.5rem);
+  width: calc(100% - 2rem);
+  /* bottom: 2rem; */
+}
+:deep(.border-box-content) {
+  display: flex !important;
+  justify-content: center !important;
+}
 #mapDiv {
   position: absolute;
-  top: 4rem;
+  /* top: 3rem; */
   width: 100%;
-  height: calc(100% - 4rem);
+  height: 100%;
 }
 .el-header {
   --el-header-padding: none;

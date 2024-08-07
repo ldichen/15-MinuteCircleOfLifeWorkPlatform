@@ -2,7 +2,7 @@
  * @Author: DiChen
  * @Date: 2024-06-19 19:51:30
  * @LastEditors: DiChen
- * @LastEditTime: 2024-07-04 10:36:31
+ * @LastEditTime: 2024-07-17 16:15:53
 -->
 
 <template>
@@ -95,7 +95,6 @@ var marker = new mapboxgl.Marker({
 
 const onLoad = () => {
   let arr = ['宜学', '宜游', '宜居', '宜养', '宜业']
-  console.log('arr', arr)
   //添加点
   for (let i = 0; i < arr.length; i++) {
     console.log('i', i)
@@ -106,6 +105,7 @@ const onLoad = () => {
       createImageBitmap(img).then((ImageBitmap) => {
         imgArr.push(ImageBitmap)
         props.map.addImage(arr[i], ImageBitmap)
+        console.log('images', props.map.listImages())
       })
     }
   }
@@ -201,7 +201,7 @@ const addGeoJsonLayer = (map, data) => {
   let urlSourceId = 'url' + sourceId
   let urlLayerId = 'url' + layerId
   let properties = data.polygon.features[0].properties
-
+  console.log('properties', properties['color'])
   map.addSource(sourceId, {
     type: 'geojson',
     data: data.polygon

@@ -2,7 +2,7 @@
  * @Author: DiChen
  * @Date: 2024-06-21 16:13:15
  * @LastEditors: DiChen
- * @LastEditTime: 2024-07-04 10:46:42
+ * @LastEditTime: 2024-07-08 10:32:24
 -->
 
 <template>
@@ -74,6 +74,7 @@ const test = () => {
 }
 const openCollapse = async (val) => {
   if (val.length != 0) {
+    //收起时才执行
     //&& !data.treeShow
     reGetLayer()
   }
@@ -179,8 +180,7 @@ const removeNode = (node, data) => {
   layersWithSource.forEach((layer) => {
     props.map.removeLayer(layer.id)
   })
-  const layers2 = props.map.getStyle().layers
-  console.log('layers2', layers2)
+
   const parent = node.parent
   const children = parent.data.children || parent.data
   const index = children.findIndex((d) => d.id === data.id)
