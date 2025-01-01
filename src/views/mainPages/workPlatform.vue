@@ -97,7 +97,7 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import Header from '@/components/header.vue'
 import tiandilayers from '@/layers/layers'
-import geoJsonDataUrl from '@/geoJson/index.js'
+import { geoJsonDataUrl, geoJsonPolygonUrl } from '@/geoJson/index.js'
 
 // left-container
 import onComputing from '@/views/modulesLeft/onComputing.vue'
@@ -163,10 +163,24 @@ const onLoad = () => {
     tiandilayers.forEach((item) => {
       addRasterTileLayer(map.value, item.url, item.id, item.id)
     })
+    geoJsonPolygonUrl.forEach((item) => {
+      console.log(item.name)
+      addGeoJsonPolygonLayer(map.value, item.url, item.name, item.name)
+    })
+
     onReloadGeoJson()
     map.value.on('styleimagemissing', (e) => {
       console.log('styleimagemissing')
     })
+    // 添加导航控件
+    const navControl = new mapboxgl.NavigationControl({
+      visualizePitch: true // 显示视角变化工具
+    })
+    map.value.addControl(navControl, 'bottom-right') // 工具条位置：右上角
+
+    // 添加全屏控件
+    const fullscreenControl = new mapboxgl.FullscreenControl()
+    map.value.addControl(fullscreenControl, 'top-right')
 
     //配置鼠标悬停移动事件
     onMouseMap()
@@ -177,11 +191,6 @@ const onLoad = () => {
     map.value.on('draw.create', handleCreateEdit)
   })
 }
-
-// const test = () => {
-//   console.log('test')
-//   onReloadGeoJson()
-// }
 
 //鼠标悬停、移除事件
 const onMouseMap = () => {
@@ -432,13 +441,36 @@ const onReloadGeoJson = () => {
       map.value.removeLayer(item.name)
     }
   })
-
   // geoJsonDataUrl.forEach((item) => {
   //   addGeoJsonLayer(map.value, item.url, item.name, item.name)
   //   data.geoLayers.push(item.name)
   // })
 }
-
+const addGeoJsonPolygonLayer = (map, url, sourceId, layerId) => {
+  map.addSource(sourceId, {
+    type: 'geojson',
+    data: url
+  })
+  map.addLayer({
+    id: layerId,
+    type: 'fill-extrusion',
+    source: sourceId,
+    paint: {
+      'fill-extrusion-color': '#888', // 建筑颜色
+      'fill-extrusion-height': [
+        'interpolate',
+        ['linear'],
+        ['to-number', ['get', 'building:levels']], // 将 building:levels 转换为数字
+        1,
+        10, // 最低值对应高度
+        40,
+        400 // 最高值对应高度
+      ],
+      'fill-extrusion-base': 0, // 设置建筑的基底高度
+      'fill-extrusion-opacity': 0.8 // 设置透明度
+    }
+  })
+}
 const addRasterTileLayer = (map, url, sourceId, layerId) => {
   map.addSource(sourceId, {
     type: 'raster',
